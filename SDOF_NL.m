@@ -37,5 +37,3 @@ c = 2 * z * wn * m;
 
 %% Newmark Method
 
-kjnkdjbfdkjsbdfkbsd
-sdkjfbsdkjbf
