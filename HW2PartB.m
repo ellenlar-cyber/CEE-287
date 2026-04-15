@@ -43,24 +43,24 @@ wn2 = 2*pi/Tn2;
 Cy_elastic = 5;
 
 % Find response for each structure
-[u1, ~, ~, ~, Sd_inelastic1, ~] = SDOF_Response_NL_1(Tn1, z, ag, dt, 0, 0, Cy_elastic, 'Cy', 'linear');
-[u2, ~, ~, ~, Sd_inelastic2, ~] = SDOF_Response_NL_1(Tn2, z, ag, dt, 0, 0, Cy_elastic, 'Cy', 'linear');
+[u1, ~, ~, ~, Sd_elastic1, ~] = SDOF_Response_NL_1(Tn1, z, ag, dt, 0, 0, Cy_elastic, 'Cy', 'linear');
+[u2, ~, ~, ~, Sd_elastic2, ~] = SDOF_Response_NL_1(Tn2, z, ag, dt, 0, 0, Cy_elastic, 'Cy', 'linear');
 
 % Elastic strength demand = peak absolute acceleration / g
 % Using max displacement
 Cy_el_1_u = wn1^2*max(abs(u1)) / g;   
 Cy_el_2_u = wn2^2*max(abs(u2)) / g; 
 
-Cy_el_1_s = (wn1^2*Sd_inelastic1) / g;   
-Cy_el_2_s = (wn2^2*Sd_inelastic2) / g; 
+Cy_el_1_s = (wn1^2*Sd_elastic1) / g;   
+Cy_el_2_s = (wn2^2*Sd_elastic2) / g; 
 
 fprintf('Part a: Elastic Lateral Strength\n')
-fprintf('Seismic coefficient (lateral strength) elastic 3-story structure (Tn = 0.4s): Cy = %.4f\n', Cy_el_1_u)
-fprintf('Seismic coefficient (lateral strength) elastic 8-story structure (Tn = 1.0s): Cy = %.4f\n\n', Cy_el_2_u)
+fprintf('Seismic coefficient (lateral strength) elastic 3-story structure (Tn = 0.4s): Cy = %.4f\n, Sd = %.4f cm (%.4f in)\n', Cy_el_1_u, Sd_elastic1, Sd_elastic1/2.54)
+fprintf('Seismic coefficient (lateral strength) elastic 8-story structure (Tn = 1.0s): Cy = %.4f\n\n, Sd = %.4f cm (%.4f in)\n', Cy_el_2_u,Sd_elastic2, Sd_elastic2/2.54)
 
 % Save elastic spectral displacements before they get overwritten in Part B
-Sd_el_1 = Sd_inelastic1;
-Sd_el_2 = Sd_inelastic2;
+Sd_el_1 = Sd_elastic1;
+Sd_el_2 = Sd_elastic2;
 
 %% Section B - R = 8 Design
 % Cy for the stuctures is 1/8 of elastic design strength
@@ -71,8 +71,8 @@ Cy1 = Cy_el_1_u/R;
 Cy2 = Cy_el_2_u/R;
 
 % Find response for each structure
-[u1, ud1, udd_abs1, Fs1, Sd_inelastic1, mu1] = SDOF_Response_NL_1(Tn1, z, ag, dt, 0, 0, Cy1, 'Cy', 'linear');
-[u2, ud2, udd_abs2, Fs2, Sd_inelastic2, mu2] = SDOF_Response_NL_1(Tn2, z, ag, dt, 0, 0, Cy2, 'Cy', 'linear');
+[u1, ud1, udd_abs1, Fs1, Sd_elastic1, mu1] = SDOF_Response_NL_1(Tn1, z, ag, dt, 0, 0, Cy1, 'Cy', 'linear');
+[u2, ud2, udd_abs2, Fs2, Sd_elastic2, mu2] = SDOF_Response_NL_1(Tn2, z, ag, dt, 0, 0, Cy2, 'Cy', 'linear');
 
 % Rebuild time vector (may have been interpolated inside function)
 t1 = (0:length(u1)-1)' * (Tn1/40);
@@ -176,7 +176,7 @@ mu_1 = 0;
 while abs((mu_1-mu_goal)/mu_goal) > mu_tol
     Cy_1 = (Cy1+Cy0)/2;
     
-    [~,~,~,~,~,mu_1] = SDOF_Response_NL_1(Tn1, z, ag, dt, 0, 0, Cy_1, 'Cy', 'linear');
+    [~,~,~,~,Sd_c1,mu_1] = SDOF_Response_NL_1(Tn1, z, ag, dt, 0, 0, Cy_1, 'Cy', 'linear');
 
     % Change Cy1 based on result
     % if mu is too high, Cy is too low, raise the lower bound
@@ -204,7 +204,7 @@ mu_2 = 0;
 while abs((mu_2-mu_goal)/mu_goal) > mu_tol
     Cy_2 = (Cy2+Cy0)/2;
     
-    [~,~,~,~,~,mu_2] = SDOF_Response_NL_1(Tn2, z, ag, dt, 0, 0, Cy_2, 'Cy', 'linear');
+    [~,~,~,~,Sd_c2,mu_2] = SDOF_Response_NL_1(Tn2, z, ag, dt, 0, 0, Cy_2, 'Cy', 'linear');
 
     % Change Cy1 based on result
     % if mu is too high, Cy is too low, raise the lower bound
@@ -219,8 +219,8 @@ while abs((mu_2-mu_goal)/mu_goal) > mu_tol
 end
 
 fprintf('\n\nPart c: Ductility Demand = 4\n')
-fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f\n', Tn1, Cy_1, mu_1)
-fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f\n', Tn2, Cy_2, mu_2)
+fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f\n, Sd = %.4f cm (%.4f in)\n',Tn1, Cy_1, mu_1, Sd_c1, Sd_c1/2.54)
+fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f\n, Sd = %.4f cm (%.4f in)\n', Tn2, Cy_2, mu_2,Sd_c2, Sd_c2/2.54)
 
 
 %% Section d
