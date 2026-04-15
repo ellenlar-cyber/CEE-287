@@ -286,7 +286,12 @@ title('Ductility Demand vs. C_y for Structures 1 and 2');
 legend('Structure 1', 'Structure 2');
 grid on;
 hold off;
-% Apply the requested ylim command with correct syntax
+
+% Read off ductility at Cy = 0.15
+[~, idx] = min(abs(Cy_range - 0.15));
+fprintf('Part e: At Cy = 0.15\n')
+fprintf('Tn=0.4s: mu = %.3f\n', mu_range_1(idx))
+fprintf('Tn=1.0s: mu = %.3f\n', mu_range_2(idx))
 
 %% Part f
 % Get eelastic displacment demands for R=2,3,4 using Ruiz-Garcia and Miranda 2003
@@ -344,3 +349,9 @@ ylabel('1/R')
 title('Inelastic Displacement Demand vs. 1/R')
 legend('Structure 1 (T_n=0.4s)', 'Structure 2 (T_n=1.0s)', 'Location', 'northeast')
 grid on
+
+% Read off inelastic displacement at 1/R = 0.4
+[~, idx] = min(abs(inv_R - 0.4));
+fprintf('Part g: At 1/R = 0.4 (R = %.1f)\n', R_range(idx))
+fprintf('Tn=0.4s: Sd_inel = %.3f cm\n', Sd_inel_g1(idx))
+fprintf('Tn=1.0s: Sd_inel = %.3f cm\n', Sd_inel_g2(idx))
