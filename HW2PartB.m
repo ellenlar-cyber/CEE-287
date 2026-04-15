@@ -75,8 +75,8 @@ Cy2 = Cy_el_2_u/R;
 [u2, ud2, udd_abs2, Fs2, Sd_elastic2, mu2] = SDOF_Response_NL_1(Tn2, z, ag, dt, 0, 0, Cy2, 'Cy', 'linear');
 
 % Rebuild time vector (may have been interpolated inside function)
-t1 = (0:length(u1)-1)' * (Tn1/40);
-t2 = (0:length(u2)-1)' * (Tn2/40);
+t1 = (0:length(u1)-1)' * dt;
+t2 = (0:length(u2)-1)' * dt;
 
 % Plotting
 

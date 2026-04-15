@@ -29,7 +29,7 @@ Cy1  = 0.1710;
     Tn1, z1, ag, dt, 0, 0, Cy1, 'Cy', 'linear');
 
 % Rebuild time vector (may have been interpolated inside function)
-t1 = (0:length(u1)-1)' * (Tn1/40);
+t1 = (0:length(u1)-1)' * dt;
 
 fprintf('\n--- Test Case 1: Tn=%.1fs, z=%.0f%%, Cy=%.2f ---\n', Tn1, z1*100, Cy1);
 fprintf('Peak displacement  = %.4f cm\n', Sd1);
@@ -77,7 +77,7 @@ grid on
 
 subplot(5,1,4)
 plot(t1, udd_abs1, 'r', 'LineWidth', 1)
-xlabel('Time (s)'); ylabel('cm/s')
+xlabel('Time (s)'); ylabel('cm/s^2')
 title('Absolute Acceleration Time History')
 grid on
 % 

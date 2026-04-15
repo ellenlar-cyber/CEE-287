@@ -129,12 +129,12 @@ for i = 1:n-1
     du = dp_hat / k_hat;
 
     %% Step 2.5: Update displacement and velocity
-    u_new  = u(i) + du;
+    u_new  = u(i) + du; % eq 2.7
 
     ud_inc = (gamma/(beta*dt))*du ...
            - (gamma/beta)*ud(i) ...
            + dt*(1 - gamma/(2*beta))*udd(i);
-    ud_new = ud_inc + ud(i);
+    ud_new = ud_inc + ud(i); % eq 2.7
 
     %% Step 6: State Determination Based on DISPLACEMENT
     % Check displacement against yield boundaries to determine FLAG
@@ -145,12 +145,12 @@ for i = 1:n-1
 
         if u_new >= uyp
             % Crossed positive yield boundary
-            FLAG   = +1;
+            FLAG   = +1; % when the Flag is changed it goes to thier repsective elseif statment to get correct Fs_new
             Fs_new = +Fy;
 
         elseif u_new <= uyn
             % Crossed negative yield boundary
-            FLAG   = -1;
+            FLAG   = -1; % when the Flag is changed it goes to thier repsective elseif statment to get correct Fs_new
             Fs_new = -Fy;
 
         else
@@ -168,7 +168,7 @@ for i = 1:n-1
             % anchored at the displacement where unloading began
             uyp    = u(i);
             uyn    = u(i) - 2*uy;
-            FLAG   = 0;
+            FLAG   = 0; % needs to change flag back to 0 so when it starts the next iteration it goes to the Flag ==0 if statement that will then send to correct Fs calc depending on the new time step conditions
             Fs_new = Fy + k*(u(i) - uyp);
 
         else
@@ -185,7 +185,7 @@ for i = 1:n-1
             % Update yield boundaries
             uyn    = u(i);
             uyp    = u(i) + 2*uy;
-            FLAG   = 0;
+            FLAG   = 0; % needs to change flag back to 0 so when it starts the next iteration it goes to the Flag ==0 if statement that will then send to correct Fs calc depending on the new time step conditions
             Fs_new = -Fy + k*(u(i) - uyn);
 
         else
@@ -202,6 +202,8 @@ for i = 1:n-1
     %% Step 8: Acceleration from equation of motion
     % Must use Fs directly and NOT the incremental formula used for linear systems
     % because Fs is no longer proportional to displacement
+    % Recommended equation to use not the one listed 2.7 for relative
+    % acceleration
     udd(i+1)     = (p(i+1) - c*ud(i+1) - Fs(i+1)) / m;
     udd_abs(i+1) = udd(i+1) + ug(i+1);
 
