@@ -80,14 +80,6 @@ plot(t1, udd_abs1, 'r', 'LineWidth', 1)
 xlabel('Time (s)'); ylabel('cm/s^2')
 title('Absolute Acceleration Time History')
 grid on
-% 
-% subplot(5,1,5)
-% plot(t1, Fs1/g, 'r', 'LineWidth', 1)
-% yline(Cy1,  '--k', sprintf('  +Cy = %.2f', Cy1))
-% yline(-Cy1, '--k', sprintf('  -Cy = %.2f', Cy1))
-% xlabel('Time (s)'); ylabel('Fs/W')
-% title('Normalized Restoring Force Time History')
-% grid on
 
 % Figure 2: Test Case 1 - Hysteretic Behavior
 figure('Name', 'Hysteretic Behavior', 'Position', [100 100 900 400])
@@ -98,46 +90,32 @@ xlabel('Displacement u (cm)'); ylabel('Fs/W')
 title(sprintf('Tn=%.1fs, Cy=%.2f,  \\mu=%.2f', Tn1, Cy1, mu1))
 grid on
 
-% Figure 4: Elastic vs Inelastic displacement comparison
-% figure('Name', 'Elastic vs Inelastic', 'Position', [100 100 900 400])
-% 
-% t1e = (0:length(u1e)-1)' * (Tn1/40);
-% t2e = (0:length(u2e)-1)' * (Tn2/40);
-% 
-% subplot(1,2,1)
-% plot(t1e, u1e, 'k--', 'LineWidth', 1); hold on
-% plot(t1,  u1,  'b',   'LineWidth', 1)
-% legend('Elastic (Cy=10)', sprintf('Inelastic (Cy=%.2f)', Cy1))
-% xlabel('Time (s)'); ylabel('u (cm)')
-% title(sprintf('Tn=%.1fs', Tn1))
-% grid on
-% 
-% subplot(1,2,2)
-% plot(t2e, u2e, 'k--', 'LineWidth', 1); hold on
-% plot(t2,  u2,  'r',   'LineWidth', 1)
-% legend('Elastic (Cy=10)', sprintf('Inelastic (Cy=%.2f)', Cy2))
-% xlabel('Time (s)'); ylabel('u (cm)')
-% title(sprintf('Tn=%.1fs', Tn2))
-% grid on
-% 
-% fprintf('\nAll plots generated. Check hysteretic loops for correct EPP shape.\n')
-% fprintf('The loops should show:\n')
-% fprintf('  - Linear loading/unloading slopes equal to k\n')
-% fprintf('  - Flat plateaus at +Fy and -Fy during yielding\n')
-% fprintf('  - Shifted elastic range (2uy wide) after each unloading event\n')
 
+fprintf('Peak displacement:  MATLAB = %.4f cm (%.4f in)\n', Sd1, Sd1/2.54)
+fprintf('Chopra Fig 7.4.2:   um = 1.71 in = 4.343 cm\n')
+fprintf('Difference: %.2f%%\n', 100*abs(Sd1 - 4.343)/4.343)
 
+%% Figure 7.4.2c - Yielding Intervals
+tol = 0.001;  % tolerance for detecting yield plateau
 
-% %% Elastic comparison: same systems with very high Cy (elastic behavior)
-% % If Cy >> PGA the system should remain elastic
-% % In that case ductility demand should be ~1.0
-% Cy_elastic = 10.0;   % much larger than PGA, system stays elastic
-% 
-% [u1e, ~, ~, ~, Sd1e, mu1e] = SDOF_Response_NL_1(...
-%     Tn1, z1, ag, dt, 0, 0, Cy_elastic, 'Cy', 'average');
-% [u2e, ~, ~, ~, Sd2e, mu2e] = SDOF_Response_NL_1(...
-%     Tn2, z2, ag, dt, 0, 0, Cy_elastic, 'Cy', 'average');
-% 
-% fprintf('\n--- Elastic check (Cy=%.1f, should give mu~1) ---\n', Cy_elastic);
-% fprintf('Tn=%.1fs: mu = %.4f  (expected ~1.0)\n', Tn1, mu1e);
-% fprintf('Tn=%.1fs: mu = %.4f  (expected ~1.0)\n', Tn2, mu2e);
+yield_pos = abs(Fs1/g - Cy1) < tol;   % FLAG = +1
+yield_neg = abs(Fs1/g + Cy1) < tol;   % FLAG = -1
+
+figure('Name', 'Yielding Intervals', 'Position', [100 100 900 300])
+
+subplot(2,1,1)
+area(t1, yield_pos, 'FaceColor', 'k', 'EdgeColor', 'none')
+ylabel('+Yield')
+ylim([-0.5 1.5])
+yticks([])
+title('Time Intervals of Yielding')
+grid on
+
+subplot(2,1,2)
+area(t1, yield_neg, 'FaceColor', 'k', 'EdgeColor', 'none')
+ylabel('-Yield')
+ylim([-0.5 1.5])
+yticks([])
+xlabel('Time (s)')
+grid on
+
