@@ -58,6 +58,10 @@ fprintf('Part a: Elastic Lateral Strength\n')
 fprintf('Seismic coefficient (lateral strength) elastic 3-story structure (Tn = 0.4s): Cy = %.4f\n', Cy_el_1_u)
 fprintf('Seismic coefficient (lateral strength) elastic 8-story structure (Tn = 1.0s): Cy = %.4f\n\n', Cy_el_2_u)
 
+% Save elastic spectral displacements before they get overwritten in Part B
+Sd_el_1 = Sd_inelastic1;
+Sd_el_2 = Sd_inelastic2;
+
 %% Section B - R = 8 Design
 % Cy for the stuctures is 1/8 of elastic design strength
 R = 8;
@@ -284,4 +288,59 @@ grid on;
 hold off;
 % Apply the requested ylim command with correct syntax
 
+%% Part f
+% Get eelastic displacment demands for R=2,3,4 using Ruiz-Garcia and Miranda 2003
 
+% Site class D coefficients
+a = 57;
+b = 1.85;
+c = 60;
+Ts = 1.05;
+
+% R values of interest 1 is just to see the benchmark
+R_vals = [1, 2, 3, 4];
+
+% Elastic spectral displacments (Cy=5)
+fprintf('\nPart f: Inelastic Displacement Demands (C_R method, Site Class D)\n')
+fprintf('%-6s  %-8s  %-8s  %-14s  %-14s\n', 'R', 'CR (T1)', 'CR (T2)', 'Sd_inelastic1 (cm)', 'Sd_inelastic2 (cm)')
+
+for j = 1:length(R_vals)
+    R_j = R_vals(j);
+
+    % CR formula from Ruiz-Garcia & Miranda 2003
+    CR_1 = 1 + (1/(a*(Tn1/Ts)^b) - 1/c) * (R_j - 1);
+    CR_2 = 1 + (1/(a*(Tn2/Ts)^b) - 1/c) * (R_j - 1);
+
+    % Inelastic displacement demand = CR * elastic spectral displacement
+    Sd_inel_f1(j) = CR_1 * Sd_el_1;
+    Sd_inel_f2(j) = CR_2 * Sd_el_2;
+
+    fprintf('R=%-4d  %-8.3f  %-8.3f  %-14.3f  %-14.3f\n', ...
+        R_j, CR_1, CR_2, Sd_inel_f1(j), Sd_inel_f2(j))
+end
+
+%% Part g
+% Plot relationship between lateral strength and inelastic displacement
+% demands
+R_range = linspace(1, 8, 100);
+inv_R   = 1 ./ R_range;
+
+Sd_inel_g1 = zeros(size(R_range));
+Sd_inel_g2 = zeros(size(R_range));
+
+for i = 1:length(R_range)
+    CR_g1 = 1 + (1/(a*(Tn1/Ts)^b) - 1/c) * (R_range(i) - 1);
+    CR_g2 = 1 + (1/(a*(Tn2/Ts)^b) - 1/c) * (R_range(i) - 1);
+    
+    Sd_inel_g1(i) = CR_g1 * Sd_el_1;
+    Sd_inel_g2(i) = CR_g2 * Sd_el_2;
+end
+
+figure('Name', 'Part g', 'Position', [100 100 900 700])
+plot(Sd_inel_g1, inv_R, 'r', 'LineWidth', 1.5); hold on
+plot(Sd_inel_g2, inv_R, 'g', 'LineWidth', 1.5);
+xlabel('Inelastic Displacement Demand S_d (cm)')
+ylabel('1/R')
+title('Inelastic Displacement Demand vs. 1/R')
+legend('Structure 1 (T_n=0.4s)', 'Structure 2 (T_n=1.0s)', 'Location', 'northeast')
+grid on
