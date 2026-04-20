@@ -1,4 +1,4 @@
-%% Part 3 - Ground Motion Scaling to DBE Level
+%% Part 4 - Ground Motion Scaling to MCE Level
 clear; clc; close all;
 
 %% Load ground motions
@@ -22,9 +22,9 @@ Te_VA          = va_rot.Te;
 Sa_maxdir_VA   = va_rot.SaRotD100;
 
 %% Load DBE spectrum from Part 1
-dbe    = readmatrix('Multi-Period Design Spectrum-20260420.csv');
-T_dbe  = dbe(:,1);
-Sa_dbe = dbe(:,2);
+mce    = readmatrix('Multi-Period MCER Spectrum-20260420.csv');
+T_dbe  = mce(:,1);
+Sa_mce = mce(:,2);
 
 %% Find DBE scale factors for each pair
 % Period range [0.2T, 2.0T] for T = 0.6s
@@ -33,26 +33,26 @@ T_lo     = 0.2 * T_struct;   % 0.12 s
 T_hi     = 2.0 * T_struct;   % 1.20 s
 
 % Interpolate DBE target onto RotD100 period grids
-Sa_dbe_SLAC = interp1(T_dbe, Sa_dbe, Te_SLAC, 'linear', 'extrap');
-Sa_dbe_VA   = interp1(T_dbe, Sa_dbe, Te_VA,   'linear', 'extrap');
+Sa_mce_SLAC = interp1(T_dbe, Sa_mce, Te_SLAC, 'linear', 'extrap');
+Sa_mce_VA   = interp1(T_dbe, Sa_mce, Te_VA,   'linear', 'extrap');
 
 % Period range indices
 idx_SLAC = Te_SLAC >= T_lo & Te_SLAC <= T_hi;
 idx_VA   = Te_VA   >= T_lo & Te_VA   <= T_hi;
 
 % Scale factor = max ratio of DBE target to max-direction spectrum over range
-SF_SLAC_DBE = max(Sa_dbe_SLAC(idx_SLAC) ./ Sa_maxdir_SLAC(idx_SLAC));
-SF_VA_DBE   = max(Sa_dbe_VA(idx_VA)     ./ Sa_maxdir_VA(idx_VA));
+SF_SLAC_MCE = max(Sa_mce_SLAC(idx_SLAC) ./ Sa_maxdir_SLAC(idx_SLAC));
+SF_VA_MCE   = max(Sa_mce_VA(idx_VA)     ./ Sa_maxdir_VA(idx_VA));
 
-fprintf('=== DBE Scale Factors ===\n');
-fprintf('SLAC pair: %.4f\n', SF_SLAC_DBE);
-fprintf('VA pair:   %.4f\n', SF_VA_DBE);
+fprintf('=== MCE Scale Factors ===\n');
+fprintf('SLAC pair: %.4f\n', SF_SLAC_MCE);
+fprintf('VA pair:   %.4f\n', SF_VA_MCE);
 
 %% Scale ground motion records
-ag_SLAC1_sc = ag_SLAC1 * SF_SLAC_DBE;
-ag_SLAC2_sc = ag_SLAC2 * SF_SLAC_DBE;
-ag_VA1_sc   = ag_VA1   * SF_VA_DBE;
-ag_VA2_sc   = ag_VA2   * SF_VA_DBE;
+ag_SLAC1_sc = ag_SLAC1 * SF_SLAC_MCE;
+ag_SLAC2_sc = ag_SLAC2 * SF_SLAC_MCE;
+ag_VA1_sc   = ag_VA1   * SF_VA_MCE;
+ag_VA2_sc   = ag_VA2   * SF_VA_MCE;
 
 %% Compute individual response spectra of scaled records (5% damping)
 T_vec = (0.05:0.05:2.0)';
@@ -92,7 +92,7 @@ Sa_V1_06  = interp1(T_vec, Sa_V1,        T_struct);
 Sa_V2_06  = interp1(T_vec, Sa_V2,        T_struct);
 Sa_mean06 = interp1(T_vec, Sa_mean_DBE,  T_struct);
 
-fprintf('\n=== Sa at T=0.6s (DBE scaled, 5%% damping) ===\n');
+fprintf('\n=== Sa at T=0.6s (MCE scaled, 5%% damping) ===\n');
 fprintf('SLAC-1: %.4f g\n', Sa_S1_06);
 fprintf('SLAC-2: %.4f g\n', Sa_S2_06);
 fprintf('VA-1:   %.4f g\n', Sa_V1_06);
@@ -108,14 +108,14 @@ plot(T_vec(idx_plot), Sa_S1(idx_plot),       'b',   'LineWidth', 1.2); hold on;
 plot(T_vec(idx_plot), Sa_S2(idx_plot),       'b--', 'LineWidth', 1.2);
 plot(T_vec(idx_plot), Sa_V1(idx_plot),       'r',   'LineWidth', 1.2);
 plot(T_vec(idx_plot), Sa_V2(idx_plot),       'r--', 'LineWidth', 1.2);
-plot(T_dbe(idx_dbe),  Sa_dbe(idx_dbe),       'k',   'LineWidth', 2.5);
+plot(T_dbe(idx_dbe),  Sa_mce(idx_dbe),       'k',   'LineWidth', 2.5);
 plot(T_vec(idx_plot), Sa_mean_DBE(idx_plot), 'g',   'LineWidth', 2.5);
 xline(T_lo, '--k', '0.2T = 0.12s', 'LabelVerticalAlignment', 'bottom');
 xline(T_hi, '--k', '2.0T = 1.20s', 'LabelVerticalAlignment', 'bottom');
 xline(T_struct, '--m', 'T = 0.6s', 'LabelVerticalAlignment', 'bottom');
 xlabel('Period T (s)');
 ylabel('S_a (g)');
-title('Scaled Ground Motion Spectra — DBE Level');
+title('Scaled Ground Motion Spectra — MCE Level');
 legend('SLAC-1','SLAC-2','VA-1','VA-2','DBE Target','Mean of 4 Records', ...
        'Location','northeast');
 grid on;
