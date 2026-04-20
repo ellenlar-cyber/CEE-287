@@ -219,8 +219,8 @@ while abs((mu_2-mu_goal)/mu_goal) > mu_tol
 end
 
 fprintf('\n\nPart c: Ductility Demand = 4\n')
-fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f\n, Sd = %.4f cm (%.4f in)\n',Tn1, Cy_1, mu_1, Sd_c1, Sd_c1/2.54)
-fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f\n, Sd = %.4f cm (%.4f in)\n', Tn2, Cy_2, mu_2,Sd_c2, Sd_c2/2.54)
+fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f, Sd = %.4f cm (%.4f in)\n',Tn1, Cy_1, mu_1, Sd_c1, Sd_c1/2.54)
+fprintf('Tn = %.1fs: Cy = %.4f, mu = %.3f, Sd = %.4f cm (%.4f in)\n', Tn2, Cy_2, mu_2,Sd_c2, Sd_c2/2.54)
 
 
 %% Section d
@@ -256,8 +256,8 @@ fprintf('Tn=%.1fs: Cy_exact=%.4f  Cy_approx=%.4f  diff=%.1f%%\n', ...
     Tn2, Cy_2, Cy_2_approx, 100*(Cy_2_approx - Cy_2)/Cy_2)
 
 %% Part e
-% Generate a Cy range from 0 to above elastic
-Cy_range = 0:0.001:Cy_el_1_u;
+% Generate a Cy range from 0 to elastic
+Cy_range = 0:0.005:Cy_el_1_u;
 
 
 % Create vectors for mu
@@ -287,9 +287,21 @@ legend('Structure 1', 'Structure 2');
 grid on;
 hold off;
 
+% Create a table of tabulated values with Mu and Cy
+% Find indicies where mu betweeen 0 and 20
+mask = mu_range_1 <= 10 | mu_range_2 <= 10;  
+% Find filtered values
+% Apply mask to filter all three arrays
+Cy_filtered  = Cy_range(mask);
+mu1_filtered = mu_range_1(mask);
+mu2_filtered = mu_range_2(mask);
+
+resultsTable = table(Cy_filtered', mu1_filtered', mu2_filtered', ...
+    'VariableNames', {'C_y', 'Mu_Structure_1', 'Mu_Structure_2'});
+
 % Read off ductility at Cy = 0.15
 [~, idx] = min(abs(Cy_range - 0.15));
-fprintf('Part e: At Cy = 0.15\n')
+fprintf('\nPart e: At Cy = 0.15\n')
 fprintf('Tn=0.4s: mu = %.3f\n', mu_range_1(idx))
 fprintf('Tn=1.0s: mu = %.3f\n', mu_range_2(idx))
 
@@ -355,3 +367,5 @@ grid on
 fprintf('Part g: At 1/R = 0.4 (R = %.1f)\n', R_range(idx))
 fprintf('Tn=0.4s: Sd_inel = %.3f cm\n', Sd_inel_g1(idx))
 fprintf('Tn=1.0s: Sd_inel = %.3f cm\n', Sd_inel_g2(idx))
+
+
