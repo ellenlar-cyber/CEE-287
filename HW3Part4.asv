@@ -40,6 +40,7 @@ Sa_mce_VA   = interp1(T_dbe, Sa_mce, Te_VA,   'linear', 'extrap');
 idx_SLAC = Te_SLAC >= T_lo & Te_SLAC <= T_hi;
 idx_VA   = Te_VA   >= T_lo & Te_VA   <= T_hi;
 
+% average o
 
 % Scale factor = max ratio of DBE target to max-direction spectrum over range
 SF_SLAC_MCE = max(Sa_mce_SLAC(idx_SLAC) ./ Sa_maxdir_SLAC(idx_SLAC));
