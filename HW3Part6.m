@@ -71,15 +71,19 @@ C1_V2_dbe = 1 + (mu_V2_dbe - 1) / (a * T^2);
 
 %% Sd at 2% damping, multiply by C1
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_SLAC1_sc_dbe, dt, 0, 0);
+Sd_S1_dbe   = Sd2;
 Disp_S1_dbe = C1_S1_dbe * Sd2;
 
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_SLAC2_sc_dbe, dt, 0, 0);
+Sd_S2_dbe   = Sd2;
 Disp_S2_dbe = C1_S2_dbe * Sd2;
 
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_VA1_sc_dbe, dt, 0, 0);
+Sd_V1_dbe   = Sd2;
 Disp_V1_dbe = C1_V1_dbe * Sd2;
 
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_VA2_sc_dbe, dt, 0, 0);
+Sd_V2_dbe   = Sd2;
 Disp_V2_dbe = C1_V2_dbe * Sd2;
 
 Disp_mean_dbe = (Disp_S1_dbe + Disp_S2_dbe + Disp_V1_dbe + Disp_V2_dbe) / 4;
@@ -113,22 +117,26 @@ C1_V2_mce = 1 + (mu_V2_mce - 1) / (a * T^2);
 %% Sd at 2% damping, multiply by C1
 
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_SLAC1_sc_mce, dt, 0, 0);
+Sd_S1_mce   = Sd2;
 Disp_S1_mce = C1_S1_mce * Sd2;
 
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_SLAC2_sc_mce, dt, 0, 0);
+Sd_S2_mce   = Sd2;
 Disp_S2_mce = C1_S2_mce * Sd2;
 
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_VA1_sc_mce, dt, 0, 0);
+Sd_V1_mce   = Sd2;
 Disp_V1_mce = C1_V1_mce * Sd2;
 
 [~,~,~,Sd2,~,~,~,~] = SDOF_Response(T, z2, ag_VA2_sc_mce, dt, 0, 0);
+Sd_V2_mce   = Sd2;
 Disp_V2_mce = C1_V2_mce * Sd2;
 
 Disp_mean_mce = (Disp_S1_mce + Disp_S2_mce + Disp_V1_mce + Disp_V2_mce) / 4;
 Disp_max_mce  = max([Disp_S1_mce, Disp_S2_mce, Disp_V1_mce, Disp_V2_mce]);
 
 %% Print summary
-fprintf('=== Part 6 Results: C1 Method (ASCE 41) ===\n\n');
+fprintf('Part 6 Results: C1 Method (ASCE 41) \n\n');
 fprintf('%-12s %8s %8s %8s %8s\n', '', 'SLAC-1', 'SLAC-2', 'VA-1', 'VA-2');
 fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'mu_str DBE', mu_S1_dbe, mu_S2_dbe, mu_V1_dbe, mu_V2_dbe);
 fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'C1 DBE',     C1_S1_dbe, C1_S2_dbe, C1_V1_dbe, C1_V2_dbe);
@@ -138,4 +146,15 @@ fprintf('Mean DBE = %.4f cm,  Max DBE = %.4f cm\n\n', Disp_mean_dbe, Disp_max_db
 fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'mu_str MCE', mu_S1_mce, mu_S2_mce, mu_V1_mce, mu_V2_mce);
 fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'C1 MCE',     C1_S1_mce, C1_S2_mce, C1_V1_mce, C1_V2_mce);
 fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'Disp MCE',   Disp_S1_mce, Disp_S2_mce, Disp_V1_mce, Disp_V2_mce);
-fprintf('Mean MCE = %.4f cm,  Max MCE = %.4f cm\n', Disp_mean_mce, Disp_max_mce);
+fprintf('Mean MCE = %.4f cm,  Max MCE = %.4f cm\n\n', Disp_mean_mce, Disp_max_mce);
+
+fprintf('Peak Elastic Displacement Demand (2%% damping)\n\n');
+fprintf('%-12s %8s %8s %8s %8s %8s %8s\n','','SLAC-1','SLAC-2','VA-1','VA-2','Mean','Max');
+fprintf('%-12s %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n', 'Sd DBE (cm)', ...
+    Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe, ...
+    mean([Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe]), ...
+    max([Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe]));
+fprintf('%-12s %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n', 'Sd MCE (cm)', ...
+    Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce, ...
+    mean([Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce]), ...
+    max([Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce]));
