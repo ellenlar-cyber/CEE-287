@@ -48,6 +48,7 @@ ag_VA2_sc_m   = ag_VA2   * SF_VA_MCE;
 
 %% Compute individual response spectra of scaled records (2% damping)
 z  = 0.02;
+T  = 0.6;
 wn = 2*pi/T;
 
 %% DBE
@@ -66,19 +67,19 @@ wn = 2*pi/T;
     Sa_mean_DBE = (Sa_S1_d + Sa_S2_d + Sa_V1_d + Sa_V2_d) / 4;
 
 %% MCE
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_m, dt, 0, 0);
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_d, dt, 0, 0);
     Sa_S1_m = wn^2 * Sd / g;
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc_m, dt, 0, 0);
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc_d, dt, 0, 0);
     Sa_S2_m = wn^2 * Sd / g;
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA1_sc_m, dt, 0, 0);
-    Sa_V1_m = wn^2 * Sd / g;
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA1_sc_d, dt, 0, 0);
+    Sa_V1_d = wn^2 * Sd / g;
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_m, dt, 0, 0);
-    Sa_V2_m = wn^2 * Sd / g;
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_d, dt, 0, 0);
+    Sa_V2_d = wn^2 * Sd / g;
 
-    Sa_mean_MCE = (Sa_S1_m + Sa_S2_m + Sa_V1_m + Sa_V2_m) / 4;
+    Sa_mean_DBE = (Sa_S1_d + Sa_S2_d + Sa_V1_d + Sa_V2_d) / 4;
 
 
 % Calculate delta e based on Sa values
