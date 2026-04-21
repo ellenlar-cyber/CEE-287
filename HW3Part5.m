@@ -112,7 +112,7 @@ delta_DBE_S2  = (Cd / Ie) * delta_e_d_S2;
 delta_DBE_V1 = (Cd / Ie) * delta_e_d_V1;
 delta_DBE_V2 = (Cd / Ie) * delta_e_d_V2;
 delta_DBE_mean = (Cd / Ie) * delta_e_d_mean;
-delta_DBE_max = 1.5 * (R / Ie) * delta_e_d_max;
+delta_DBE_max = (Cd / Ie) * delta_e_d_max;
 
 
 % Eq. 12.8-17: MCE displacement
