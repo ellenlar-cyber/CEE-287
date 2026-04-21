@@ -32,17 +32,31 @@ T_struct = 0.6;
 T_lo     = 0.2 * T_struct;   % 0.12 s
 T_hi     = 2.0 * T_struct;   % 1.20 s
 
-% Interpolate DBE target onto RotD100 period grids
-Sa_dbe_SLAC = interp1(T_dbe, Sa_dbe, Te_SLAC, 'linear', 'extrap');
-Sa_dbe_VA   = interp1(T_dbe, Sa_dbe, Te_VA,   'linear', 'extrap');
+T_common = (T_lo : 0.001 : T_hi)';
 
-% Period range indices
-idx_SLAC = Te_SLAC >= T_lo & Te_SLAC <= T_hi;
-idx_VA   = Te_VA   >= T_lo & Te_VA   <= T_hi;
+% Interpolate everything onto that grid
+Sa_SLAC_common = interp1(Te_SLAC, Sa_maxdir_SLAC, T_common, 'linear', 'extrap');
+Sa_VA_common   = interp1(Te_VA,   Sa_maxdir_VA,   T_common, 'linear', 'extrap');
+Sa_dbe_common  = interp1(T_dbe,   Sa_dbe,         T_common, 'linear', 'extrap');
 
-% Scale factor = max ratio of DBE target to max-direction spectrum over range
-SF_SLAC_DBE = max(Sa_dbe_SLAC(idx_SLAC) ./ Sa_maxdir_SLAC(idx_SLAC));
-SF_VA_DBE   = max(Sa_dbe_VA(idx_VA)     ./ Sa_maxdir_VA(idx_VA));
+% find average of Sa arrays
+SaAvg_SLAC = mean(Sa_SLAC_common);
+SaAvg_VA   = mean(Sa_VA_common);
+SaAvg_dbe = mean(Sa_dbe_common);
+
+% Scale SLAC and VA vs USGS
+SF1 = SaAvg_dbe / SaAvg_SLAC;
+SF2 = SaAvg_dbe / SaAvg_VA;
+
+% Find mean for each period
+Sa_mean = 0.5 * (SF1 * Sa_SLAC_common + SF2 * Sa_VA_common);
+
+ratios = (0.9 * Sa_dbe_common)./ Sa_mean;
+SF3 = max(ratios);  % worst-case period sets SF3
+
+% Final scale factors
+SF_SLAC_DBE = SF1 * SF3;
+SF_VA_DBE   = SF2 * SF3;
 
 fprintf('=== DBE Scale Factors ===\n');
 fprintf('SLAC pair: %.4f\n', SF_SLAC_DBE);
@@ -57,7 +71,6 @@ ag_VA2_sc   = ag_VA2   * SF_VA_DBE;
 %% Compute individual response spectra of scaled records (5% damping)
 T_vec = (0.05:0.05:2.0)';
 z  = 0.05;
-Cy_hi = 100;    % large Cy keeps system elastic
 
 Sa_S1 = zeros(length(T_vec),1);
 Sa_S2 = zeros(length(T_vec),1);
@@ -70,34 +83,43 @@ for i = 1:length(T_vec)
     T  = T_vec(i);
     wn = 2*pi/T;
 
-    [~,~,~,~,Sd,~] = SDOF_Response_NL_1(T, z, ag_SLAC1_sc, dt, 0, 0, Cy_hi, 'Cy', 'linear');
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc, dt, 0, 0);
     Sa_S1(i) = wn^2 * Sd / g;
 
-    [~,~,~,~,Sd,~] = SDOF_Response_NL_1(T, z, ag_SLAC2_sc, dt, 0, 0, Cy_hi, 'Cy', 'linear');
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc, dt, 0, 0);
     Sa_S2(i) = wn^2 * Sd / g;
 
-    [~,~,~,~,Sd,~] = SDOF_Response_NL_1(T, z, ag_VA1_sc, dt, 0, 0, Cy_hi, 'Cy', 'linear');
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA1_sc, dt, 0, 0);
     Sa_V1(i) = wn^2 * Sd / g;
 
-    [~,~,~,~,Sd,~] = SDOF_Response_NL_1(T, z, ag_VA2_sc, dt, 0, 0, Cy_hi, 'Cy', 'linear');
+    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc, dt, 0, 0);
     Sa_V2(i) = wn^2 * Sd / g;
 end
 
 Sa_mean_DBE = (Sa_S1 + Sa_S2 + Sa_V1 + Sa_V2) / 4;
 
-%% Print Sa values at T = 0.6s
-Sa_S1_06  = interp1(T_vec, Sa_S1,        T_struct);
-Sa_S2_06  = interp1(T_vec, Sa_S2,        T_struct);
-Sa_V1_06  = interp1(T_vec, Sa_V1,        T_struct);
-Sa_V2_06  = interp1(T_vec, Sa_V2,        T_struct);
-Sa_mean06 = interp1(T_vec, Sa_mean_DBE,  T_struct);
 
-fprintf('\n=== Sa at T=0.6s (DBE scaled, 5%% damping) ===\n');
-fprintf('SLAC-1: %.4f g\n', Sa_S1_06);
-fprintf('SLAC-2: %.4f g\n', Sa_S2_06);
-fprintf('VA-1:   %.4f g\n', Sa_V1_06);
-fprintf('VA-2:   %.4f g\n', Sa_V2_06);
-fprintf('Mean:   %.4f g\n', Sa_mean06);
+
+
+
+
+
+
+
+%% FROM HERE IDK
+% %% Print Sa values at T = 0.6s
+% Sa_S1_06  = interp1(T_vec, Sa_S1,        T_struct);
+% Sa_S2_06  = interp1(T_vec, Sa_S2,        T_struct);
+% Sa_V1_06  = interp1(T_vec, Sa_V1,        T_struct);
+% Sa_V2_06  = interp1(T_vec, Sa_V2,        T_struct);
+% Sa_mean06 = interp1(T_vec, Sa_mean_DBE,  T_struct);
+% 
+% fprintf('\n=== Sa at T=0.6s (DBE scaled, 5%% damping) ===\n');
+% fprintf('SLAC-1: %.4f g\n', Sa_S1_06);
+% fprintf('SLAC-2: %.4f g\n', Sa_S2_06);
+% fprintf('VA-1:   %.4f g\n', Sa_V1_06);
+% fprintf('VA-2:   %.4f g\n', Sa_V2_06);
+% fprintf('Mean:   %.4f g\n', Sa_mean06);
 
 %% Plot DBE scaled spectra
 idx_plot = T_vec <= 2.0;
@@ -121,3 +143,5 @@ legend('SLAC-1','SLAC-2','VA-1','VA-2','DBE Target','Mean of 4 Records', ...
 grid on;
 xlim([0 2]);
 ylim([0 inf]);
+
+
