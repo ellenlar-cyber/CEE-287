@@ -1,6 +1,6 @@
 %% HW 3 Part 5 - Compute Displacement Demands
 
-clc; clear all; close all
+clc; clear;close all;
 %% Questions: should the delta e be different, should it be computed based on the 5% displacements? do they use the same Sa? should this be based on Sa or Sd?
 %% Do we need a plot? or is just for T struct?
 %% do we use the scales ground motions?
