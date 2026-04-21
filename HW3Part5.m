@@ -1,10 +1,6 @@
 %% HW 3 Part 5 - Compute Displacement Demands
 
 clc; clear;close all;
-%% Questions: should the delta e be different, should it be computed based on the 5% displacements? do they use the same Sa? should this be based on Sa or Sd?
-%% Do we need a plot? or is just for T struct?
-%% do we use the scales ground motions?
-
 
 % BRBF parameters from ASCE 7-22 Table 12.2-1
 R  = 8;
@@ -25,12 +21,10 @@ ag_SLAC2 = data(:,4);
 ag_VA1   = data(:,5);
 ag_VA2   = data(:,6);
 
-%% UPDATE IF NEEDED!!!!!!
 %% Final scale factors DBE
 SF_SLAC_DBE = 2.8634;
 SF_VA_DBE   = 2.7373;
 
-%% UPDATE IF NEEDED!!!!!!
 %% Final scale factors MCE
 SF_SLAC_MCE = 4.2972;
 SF_VA_MCE   = 4.1080;

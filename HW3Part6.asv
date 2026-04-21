@@ -41,53 +41,37 @@ z2 = 0.02;   % 2% damping for RHA
 z5 = 0.05;   % 5% damping for Sa 
 wn = 2*pi/T;
 
-% %% ASK ABOUT HOW TO GET LATERAL STRENGTH
-% lat_strength = SDS / (R / Ie);
-% a = 60; % Site class D
+a = 60; % Site class D
 
 %% Compute Sa values for 5%
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_SLAC1_sc_dbe, dt, 0, 0);
-Sa_S1_dbe = wn^2 * Sd5 / g;
-% Ce = 4*pi^2 * Sd (for record) / (g ( Tn^2))
-Ce_S1_dbe = 4*pi^2 * Sd5 / (g*T^2);
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_SLAC1_sc_dbe, dt, 0, 0);
+Sa_S1_dbe = Sa5/g;
 
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_SLAC2_sc_dbe, dt, 0, 0);
-Sa_S2_dbe = wn^2 * Sd5 / g;
-% Ce = 4*pi^2 * Sd (for record) / (g ( Tn^2))
-Ce_S2_dbe = 4*pi^2 * Sd5 / (g*T^2);
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_SLAC2_sc_dbe, dt, 0, 0);
+Sa_S2_dbe = Sa5/g;
 
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_VA1_sc_dbe, dt, 0, 0);
-Sa_V1_dbe = wn^2 * Sd5 / g;
-% Ce = 4*pi^2 * Sd (for record) / (g ( Tn^2))
-Ce_V1_dbe = 4*pi^2 * Sd5 / (g*T^2);
 
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_VA2_sc_dbe, dt, 0, 0);
-Sa_V2_dbe = wn^2 * Sd5 / g;
-% Ce = 4*pi^2 * Sd (for record) / (g ( Tn^2))
-Ce_V2_dbe = 4*pi^2 * Sd5 / (g*T^2);
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_VA1_sc_dbe, dt, 0, 0);
+Sa_V1_dbe = Sa5/g;
+
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_VA2_sc_dbe, dt, 0, 0);
+Sa_V2_dbe = Sa5/g;
+
 
 % mu_strength per record
-% mu is Sa/(Vy/W)
+% mu is Sa(of record)/(Vy/W)
 % Sa is taken from 5% damping case, calculated above
-% W = 
-W = 1;
-
-% Cy = Ce/R
-Cy_S1_dbe = Ce_S1_dbe / R;
-Cy_S2_dbe = Ce_S1_dbe / R;
-Cy_S1_dbe = Ce_S1_dbe / R;
-Cy_S1_dbe = Ce_S1_dbe / R;
-
-% Vy = Sa design (from part 1)/Cy
-
+% Vy/W = Sa design /R
+Sa_design_dbe = 1.4800;
+Vy_dbe = Sa_design_dbe / R;
 
 % Cm = 0 because "other" structure
 Cm = 1.0;
 
-mu_S1_dbe = Sa_S1_dbe / (Vy_S1_dbe/W) * Cm;
-mu_S2_dbe = Sa_S2_dbe / (Vy_S2_dbe/W) * Cm;
-mu_V1_dbe = Sa_V1_dbe / (Vy_V1_dbe/W) * Cm;
-mu_V2_dbe = Sa_V2_dbe / (Vy_V2_dbe/W) * Cm;
+mu_S1_dbe = Sa_S1_dbe / Vy_dbe * Cm;
+mu_S2_dbe = Sa_S2_dbe / Vy_dbe * Cm;
+mu_V1_dbe = Sa_V1_dbe / Vy_dbe * Cm;
+mu_V2_dbe = Sa_V2_dbe / Vy_dbe * Cm;
 
 % C1 per record
 C1_S1_dbe = 1 + (mu_S1_dbe - 1) / (a * T^2);
@@ -116,16 +100,18 @@ Disp_mean_dbe = (Disp_S1_dbe + Disp_S2_dbe + Disp_V1_dbe + Disp_V2_dbe) / 4;
 Disp_max_dbe  = max([Disp_S1_dbe, Disp_S2_dbe, Disp_V1_dbe, Disp_V2_dbe]);
 
 %% MCE
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_SLAC1_sc_mce, dt, 0, 0);
+%% Compute Sa values for 5%
+
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_SLAC1_sc_mce, dt, 0, 0);
 Sa_S1_mce = wn^2 * Sd5 / g;
 
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_SLAC2_sc_mce, dt, 0, 0);
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_SLAC2_sc_mce, dt, 0, 0);
 Sa_S2_mce = wn^2 * Sd5 / g;
 
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_VA1_sc_mce, dt, 0, 0);
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_VA1_sc_mce, dt, 0, 0);
 Sa_V1_mce = wn^2 * Sd5 / g;
 
-[~,~,~,Sd5,~,~,~,~] = SDOF_Response(T, z5, ag_VA2_sc_mce, dt, 0, 0);
+[~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_VA2_sc_mce, dt, 0, 0);
 Sa_V2_mce = wn^2 * Sd5 / g;
 
 % mu_strength per record
@@ -169,18 +155,18 @@ fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'C1 DBE',     C1_S1_dbe, C1_S2_dbe, C
 fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'Disp DBE',   Disp_S1_dbe, Disp_S2_dbe, Disp_V1_dbe, Disp_V2_dbe);
 fprintf('Mean DBE = %.4f cm,  Max DBE = %.4f cm\n\n', Disp_mean_dbe, Disp_max_dbe);
 
-fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'mu_str MCE', mu_S1_mce, mu_S2_mce, mu_V1_mce, mu_V2_mce);
-fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'C1 MCE',     C1_S1_mce, C1_S2_mce, C1_V1_mce, C1_V2_mce);
-fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'Disp MCE',   Disp_S1_mce, Disp_S2_mce, Disp_V1_mce, Disp_V2_mce);
-fprintf('Mean MCE = %.4f cm,  Max MCE = %.4f cm\n\n', Disp_mean_mce, Disp_max_mce);
+% fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'mu_str MCE', mu_S1_mce, mu_S2_mce, mu_V1_mce, mu_V2_mce);
+% fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'C1 MCE',     C1_S1_mce, C1_S2_mce, C1_V1_mce, C1_V2_mce);
+% fprintf('%-12s %8.4f %8.4f %8.4f %8.4f\n', 'Disp MCE',   Disp_S1_mce, Disp_S2_mce, Disp_V1_mce, Disp_V2_mce);
+% fprintf('Mean MCE = %.4f cm,  Max MCE = %.4f cm\n\n', Disp_mean_mce, Disp_max_mce);
 
-fprintf('Peak Elastic Displacement Demand (2%% damping)\n\n');
-fprintf('%-12s %8s %8s %8s %8s %8s %8s\n','','SLAC-1','SLAC-2','VA-1','VA-2','Mean','Max');
-fprintf('%-12s %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n', 'Sd DBE (cm)', ...
-    Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe, ...
-    mean([Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe]), ...
-    max([Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe]));
-fprintf('%-12s %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n', 'Sd MCE (cm)', ...
-    Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce, ...
-    mean([Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce]), ...
-    max([Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce]));
+% fprintf('Peak Elastic Displacement Demand (2%% damping)\n\n');
+% fprintf('%-12s %8s %8s %8s %8s %8s %8s\n','','SLAC-1','SLAC-2','VA-1','VA-2','Mean','Max');
+% fprintf('%-12s %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n', 'Sd DBE (cm)', ...
+%     Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe, ...
+%     mean([Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe]), ...
+%     max([Sd_S1_dbe, Sd_S2_dbe, Sd_V1_dbe, Sd_V2_dbe]));
+% % fprintf('%-12s %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n', 'Sd MCE (cm)', ...
+% %     Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce, ...
+% %     mean([Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce]), ...
+% %     max([Sd_S1_mce, Sd_S2_mce, Sd_V1_mce, Sd_V2_mce]));
