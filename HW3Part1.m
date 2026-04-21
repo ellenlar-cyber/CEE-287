@@ -28,7 +28,7 @@ ylim([0 2.5]);
 
 % BRBF parameters from ASCE 7-22 Table 12.2-1
 R  = 8;
-Cd = 5.5;
+Cd = 5;
 Ie = 1.0;   % Risk Category II
 T  = 0.6;   % fundamental period (s)
 g  = 981;   % cm/s^2
