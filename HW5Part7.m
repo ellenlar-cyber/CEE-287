@@ -46,20 +46,22 @@ ag_VA2_sc_m   = ag_VA2   * SF_VA_MCE;
 z  = 0.02;
 wn = 2*pi/T;
 
-% Calculate Cy (in this case Cs for seismic response coefficient??)
-% Sa from ASCE 7-22 Hazard tool (use sds) %% ASK ABOUT THIS!!!
-Sa = 1.42;
-% Eq. 12.8-2
-Cs = Sa / (R/Ie);
+% Calculate Cy 
+% Cy = Sa design/ R
+Sa_design_dbe = 1.4800;
+Sa_design_mce = 2.2200; 
+
+Cy_dbe = Sa_design_dbe/R;
+Cy_mce = Sa_design_mce/R;
 
 %% DBE Values
-    [~, ~, ~, ~, Sd_in_d_S1, ~] = SDOF_Response_NL_1(T, z, ag_SLAC1_sc_d, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_d_S1, ~] = SDOF_Response_NL_1(T, z, ag_SLAC1_sc_d, dt, 0, 0, Cy_dbe, 'Cy', 'linear');
 
-    [~, ~, ~, ~, Sd_in_d_S2, ~] = SDOF_Response_NL_1(T, z, ag_SLAC2_sc_d, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_d_S2, ~] = SDOF_Response_NL_1(T, z, ag_SLAC2_sc_d, dt, 0, 0, Cy_dbe, 'Cy', 'linear');
 
-    [~, ~, ~, ~, Sd_in_d_V1, ~] = SDOF_Response_NL_1(T, z, ag_VA1_sc_d, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_d_V1, ~] = SDOF_Response_NL_1(T, z, ag_VA1_sc_d, dt, 0, 0, Cy_dbe, 'Cy', 'linear');
 
-    [~, ~, ~, ~, Sd_in_d_V2, ~] = SDOF_Response_NL_1(T, z, ag_VA2_sc_d, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_d_V2, ~] = SDOF_Response_NL_1(T, z, ag_VA2_sc_d, dt, 0, 0, Cy_dbe, 'Cy', 'linear');
 
     Sd_d_mean = (Sd_in_d_S1 + Sd_in_d_S2 + Sd_in_d_V1 + Sd_in_d_V2) / 4;
 
@@ -67,13 +69,13 @@ Cs = Sa / (R/Ie);
 
     
 %% MCE values
-    [~, ~, ~, ~, Sd_in_m_S1, ~] = SDOF_Response_NL_1(T, z, ag_SLAC1_sc_m, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_m_S1, ~] = SDOF_Response_NL_1(T, z, ag_SLAC1_sc_m, dt, 0, 0, Cy_mce, 'Cy', 'linear');
 
-    [~, ~, ~, ~, Sd_in_m_S2, ~] = SDOF_Response_NL_1(T, z, ag_SLAC2_sc_m, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_m_S2, ~] = SDOF_Response_NL_1(T, z, ag_SLAC2_sc_m, dt, 0, 0, Cy_mce, 'Cy', 'linear');
 
-    [~, ~, ~, ~, Sd_in_m_V1, ~] = SDOF_Response_NL_1(T, z, ag_VA1_sc_m, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_m_V1, ~] = SDOF_Response_NL_1(T, z, ag_VA1_sc_m, dt, 0, 0, Cy_mce, 'Cy', 'linear');
 
-    [~, ~, ~, ~, Sd_in_m_V2, ~] = SDOF_Response_NL_1(T, z, ag_VA2_sc_m, dt, 0, 0, Cs, 'Cy', 'linear');
+    [~, ~, ~, ~, Sd_in_m_V2, ~] = SDOF_Response_NL_1(T, z, ag_VA2_sc_m, dt, 0, 0, Cy_mce, 'Cy', 'linear');
 
     Sd_m_mean = (Sd_in_m_S1 + Sd_in_m_S2 + Sd_in_m_V1 + Sd_in_m_V2) / 4;
 

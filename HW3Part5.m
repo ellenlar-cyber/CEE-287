@@ -49,79 +49,54 @@ ag_VA2_sc_m   = ag_VA2   * SF_VA_MCE;
 
 %% Compute individual response spectra of scaled records (2% damping)
 z  = 0.02;
-wn = 2*pi/T;
 
 %% DBE
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_d, dt, 0, 0);
-    Sa_S1_d = wn^2 * Sd / g;
+    [~,~,~,Sd_S1_d,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_d, dt, 0, 0);
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc_d, dt, 0, 0);
-    Sa_S2_d = wn^2 * Sd / g;
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA1_sc_d, dt, 0, 0);
-    Sa_V1_d = wn^2 * Sd / g;
+    [~,~,~,Sd_S2_d,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc_d, dt, 0, 0);
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_d, dt, 0, 0);
-    Sa_V2_d = wn^2 * Sd / g;
 
-    Sa_mean_DBE = (Sa_S1_d + Sa_S2_d + Sa_V1_d + Sa_V2_d) / 4;
+    [~,~,~,Sd_V1_d,~,~,~,~] = SDOF_Response(T, z, ag_VA1_sc_d, dt, 0, 0);
+ 
 
-    Sa_max_DBE = max([Sa_S1_d, Sa_S2_d, Sa_V1_d, Sa_V2_d]);
+    [~,~,~,Sd_V2_d,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_d, dt, 0, 0);
+  
+
+    Sd_mean_DBE = (Sd_S1_d + Sd_S2_d + Sd_V1_d + Sd_V2_d) / 4;
+
+    Sd_max_DBE = max([Sd_S1_d, Sd_S2_d, Sd_V1_d, Sd_V2_d]);
 
 %% MCE
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_m, dt, 0, 0);
-    Sa_S1_m = wn^2 * Sd / g;
+    [~,~,~,Sd_S1_m,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_m, dt, 0, 0);
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc_m, dt, 0, 0);
-    Sa_S2_m = wn^2 * Sd / g;
+    [~,~,~,Sd_S2_m,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc_m, dt, 0, 0);
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA1_sc_m, dt, 0, 0);
-    Sa_V1_m = wn^2 * Sd / g;
+    [~,~,~,Sd_V1_m,~,~,~,~] = SDOF_Response(T, z, ag_VA1_sc_m, dt, 0, 0);
 
-    [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_m, dt, 0, 0);
-    Sa_V2_m = wn^2 * Sd / g;
+    [~,~,~,Sd_V2_m,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_m, dt, 0, 0);
 
-    Sa_mean_MCE = (Sa_S1_m + Sa_S2_m + Sa_V1_m + Sa_V2_m) / 4;
+    Sd_mean_MCE = (Sd_S1_m + Sd_S2_m + Sd_V1_m + Sd_V2_m) / 4;
 
-    Sa_max_MCE = max([Sa_S1_m, Sa_S2_m, Sa_V1_m, Sa_V2_m]);
-
-
-% Calculate delta e based on Sa values
-% delta_e = (Sa/(R/Ie)) * g*T^2/(4*pi^2)
-delta_e_d_S1 = (Sa_S1_d / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_d_S2 = (Sa_S2_d / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_d_V1 = (Sa_V1_d / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_d_V2 = (Sa_V2_d / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_d_mean = (Sa_mean_DBE / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_d_max = (Sa_max_DBE / (R/Ie)) * g * T^2 / (4*pi^2);
-
-
-% Calculate delta e based on Sa values
-% delta_e = (Sa/(R/Ie)) * g*T^2/(4*pi^2)
-delta_e_m_S1 = (Sa_S1_m / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_m_S2 = (Sa_S2_m / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_m_V1 = (Sa_V1_m / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_m_V2 = (Sa_V2_m / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_m_mean = (Sa_mean_MCE / (R/Ie)) * g * T^2 / (4*pi^2);
-delta_e_m_max = (Sa_max_MCE / (R/Ie)) * g * T^2 / (4*pi^2);
-
+    Sd_max_MCE = max([Sd_S1_m, Sd_S2_m, Sd_V1_m, Sd_V2_m]);
 
 % Eq. 12.8-16: DBE displacement
-delta_DBE_S1 = (Cd / Ie) * delta_e_d_S1;
-delta_DBE_S2  = (Cd / Ie) * delta_e_d_S2;
-delta_DBE_V1 = (Cd / Ie) * delta_e_d_V1;
-delta_DBE_V2 = (Cd / Ie) * delta_e_d_V2;
-delta_DBE_mean = (Cd / Ie) * delta_e_d_mean;
-delta_DBE_max = (Cd / Ie) * delta_e_d_max;
+delta_DBE_S1 = ((Cd / R) / Ie) * Sd_S1_d;
+delta_DBE_S2  = ((Cd / R) / Ie) * Sd_S2_d;
+delta_DBE_V1 = ((Cd / R) / Ie) * Sd_V1_d;
+delta_DBE_V2 = ((Cd / R) / Ie) * Sd_V2_d;
+delta_DBE_mean = ((Cd / R) / Ie) * Sd_mean_DBE;
+delta_DBE_max = ((Cd / R) / Ie) * Sd_max_DBE;
 
 
-% Eq. 12.8-17: MCE displacement
-delta_MCE_S1 = 1.5 * (R / Ie) * delta_e_m_S1;
-delta_MCE_S2 = 1.5 * (R / Ie) * delta_e_m_S2;
-delta_MCE_V1 = 1.5 * (R / Ie) * delta_e_m_V1;
-delta_MCE_V2 = 1.5 * (R / Ie) * delta_e_m_V2;
-delta_MCE_mean = 1.5 * (R / Ie) * delta_e_m_mean;
-delta_MCE_max = 1.5 * (R / Ie) * delta_e_m_max;
+% Eq. 12.8-17: MCE displacement ( DO NOT SCALE BY 1.5 BECAUSE ALREADY USING
+% MCE SPECTRUM, NOT CONVERTING FROM DBE )
+delta_MCE_S1 = 1 / Ie * Sd_S1_m;
+delta_MCE_S2 = 1  / Ie * Sd_S2_m;
+delta_MCE_V1 = 1 / Ie * Sd_V1_m;
+delta_MCE_V2 = 1 / Ie * Sd_V2_m;
+delta_MCE_mean = 1 / Ie * Sd_mean_MCE;
+delta_MCE_max = 1 / Ie * Sd_max_MCE;
 
 fprintf('delta_DBE_S1 = %.4f cm\n', delta_DBE_S1);
 fprintf('delta_DBE_S2 = %.4f cm\n', delta_DBE_S2);
