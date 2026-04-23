@@ -43,7 +43,7 @@ wn = 2*pi/T;
 
 a = 60; % Site class D
 
-%% Compute Sa values for 5%
+%% Compute Sa values for 5% to use in mu calcualtion
 [~,~,~,~,~,Sa5,~,~] = SDOF_Response(T, z5, ag_SLAC1_sc_dbe, dt, 0, 0);
 Sa_S1_dbe = Sa5/g;
 

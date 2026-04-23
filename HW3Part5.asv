@@ -21,12 +21,10 @@ ag_SLAC2 = data(:,4);
 ag_VA1   = data(:,5);
 ag_VA2   = data(:,6);
 
-
 %% Final scale factors DBE
 SF_SLAC_DBE = 2.8634;
 SF_VA_DBE   = 2.7373;
 
-%% UPDATE IF NEEDED!!!!!!
 %% Final scale factors MCE
 SF_SLAC_MCE = 4.2972;
 SF_VA_MCE   = 4.1080;
@@ -47,6 +45,7 @@ ag_VA2_sc_m   = ag_VA2   * SF_VA_MCE;
 z  = 0.02;
 
 %% DBE
+% Find spectral displacement for each gro
     [~,~,~,Sd_S1_d,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_d, dt, 0, 0);
 
 

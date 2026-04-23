@@ -45,6 +45,8 @@ ag_VA2_sc_m   = ag_VA2   * SF_VA_MCE;
 z  = 0.02;
 
 %% DBE
+% Find spectral displacement for each ground motion for Tstruct given
+% damping ratio and initial conditions
     [~,~,~,Sd_S1_d,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_d, dt, 0, 0);
 
 
@@ -56,12 +58,15 @@ z  = 0.02;
 
     [~,~,~,Sd_V2_d,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_d, dt, 0, 0);
   
-
+    % compute mean based on individual displacements
     Sd_mean_DBE = (Sd_S1_d + Sd_S2_d + Sd_V1_d + Sd_V2_d) / 4;
 
+    % Compute max of individual displacements
     Sd_max_DBE = max([Sd_S1_d, Sd_S2_d, Sd_V1_d, Sd_V2_d]);
 
 %% MCE
+% Find spectral displacement for each ground motion for Tstruct given
+% damping ratio and initial conditions
     [~,~,~,Sd_S1_m,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc_m, dt, 0, 0);
 
     [~,~,~,Sd_S2_m,~,~,~,~] = SDOF_Response(T, z, ag_SLAC2_sc_m, dt, 0, 0);
@@ -70,11 +75,14 @@ z  = 0.02;
 
     [~,~,~,Sd_V2_m,~,~,~,~] = SDOF_Response(T, z, ag_VA2_sc_m, dt, 0, 0);
 
+     % compute mean based on individual displacements
     Sd_mean_MCE = (Sd_S1_m + Sd_S2_m + Sd_V1_m + Sd_V2_m) / 4;
 
+     % Compute max of individual displacements
     Sd_max_MCE = max([Sd_S1_m, Sd_S2_m, Sd_V1_m, Sd_V2_m]);
 
-% Eq. 12.8-16: DBE displacement
+% Eq. 12.8-16: DBE displacement based on ASCE 7-22 using calculated
+% spectral displacements
 delta_DBE_S1 = ((Cd / R) / Ie) * Sd_S1_d;
 delta_DBE_S2  = ((Cd / R) / Ie) * Sd_S2_d;
 delta_DBE_V1 = ((Cd / R) / Ie) * Sd_V1_d;
@@ -92,6 +100,8 @@ delta_MCE_V2 = 1 / Ie * Sd_V2_m;
 delta_MCE_mean = 1 / Ie * Sd_mean_MCE;
 delta_MCE_max = 1 / Ie * Sd_max_MCE;
 
+% display all results
+fprintf('\nDisplacement Sd: DBE Spectrum, 2%% Damping\n');
 fprintf('delta_DBE_S1 = %.4f cm\n', delta_DBE_S1);
 fprintf('delta_DBE_S2 = %.4f cm\n', delta_DBE_S2);
 fprintf('delta_DBE_VA1 = %.4f cm\n', delta_DBE_V1);
@@ -99,7 +109,7 @@ fprintf('delta_DBE_VA2 = %.4f cm\n', delta_DBE_V2);
 fprintf('delta_DBE_mean = %.4f cm\n', delta_DBE_mean);
 fprintf('delta_DBE_max = %.4f cm\n', delta_DBE_max);
 
-
+fprintf('\nDisplacement Sd: MCE Spectrum, 2%% Damping\n');
 fprintf('delta_MCE_S1 = %.4f cm\n', delta_MCE_S1);
 fprintf('delta_MCE_S2 = %.4f cm\n', delta_MCE_S2);
 fprintf('delta_MCE_VA1 = %.4f cm\n', delta_MCE_V1);

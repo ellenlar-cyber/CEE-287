@@ -29,12 +29,14 @@ Sa_dbe = dbe(:,2);
 %% Find DBE scale factors for each pair
 % Period range [0.2T, 2.0T] for T = 0.6s
 T_struct = 0.6;
+% Set upper and lower bound
 T_lo     = 0.2 * T_struct;   % 0.12 s
 T_hi     = 2.0 * T_struct;   % 1.20 s
 
+% Create a nomalized period vector so all ground motions same size
 T_common = (T_lo : 0.001 : T_hi)';
 
-% Interpolate everything onto that grid
+% Interpolate everything onto that size vector
 Sa_SLAC_common = interp1(Te_SLAC, Sa_maxdir_SLAC, T_common, 'linear', 'extrap');
 Sa_VA_common   = interp1(Te_VA,   Sa_maxdir_VA,   T_common, 'linear', 'extrap');
 Sa_dbe_common  = interp1(T_dbe,   Sa_dbe,         T_common, 'linear', 'extrap');
@@ -44,45 +46,54 @@ SaAvg_SLAC = mean(Sa_SLAC_common);
 SaAvg_VA   = mean(Sa_VA_common);
 SaAvg_dbe = mean(Sa_dbe_common);
 
-% Scale SLAC and VA vs USGS
+% Scale SLAC and VA against design spectrum
 SF1 = SaAvg_dbe / SaAvg_SLAC;
 SF2 = SaAvg_dbe / SaAvg_VA;
 
-% Find mean for each period
+% Find mean Sa for each period given initially scaled vectors
 Sa_mean = 0.5 * (SF1 * Sa_SLAC_common + SF2 * Sa_VA_common);
 
+% Scale by 0.9 for design
 ratios = (0.9 * Sa_dbe_common)./ Sa_mean;
-SF3 = max(ratios);  % worst-case period sets SF3
 
-% Final scale factors
+% Find the worst case spectral acceleration scale to govern
+SF3 = max(ratios);  
+
+% Final scale factors as a product of the combined scale factors found
 SF_SLAC_DBE = SF1 * SF3;
 SF_VA_DBE   = SF2 * SF3;
 
-fprintf('=== DBE Scale Factors ===\n');
-fprintf('SLAC pair: %.4f\n', SF_SLAC_DBE);
-fprintf('VA pair:   %.4f\n', SF_VA_DBE);
+fprintf('DBE Scale Factors\n');
+fprintf('SLAC Scale Factor: %.4f\n', SF_SLAC_DBE);
+fprintf('VA Scale Factor:   %.4f\n', SF_VA_DBE);
 
-%% Scale ground motion records
+%% Scale ground motion records using appropriate scale factor
 ag_SLAC1_sc = ag_SLAC1 * SF_SLAC_DBE;
 ag_SLAC2_sc = ag_SLAC2 * SF_SLAC_DBE;
 ag_VA1_sc   = ag_VA1   * SF_VA_DBE;
 ag_VA2_sc   = ag_VA2   * SF_VA_DBE;
 
 %% Compute individual response spectra of scaled records (5% damping)
+% Create period range for graphing and data interpretation
 T_vec = (0.05:0.05:2.0)';
+% define damping ratio
 z  = 0.05;
 
+% initialize spectral acceleration vectors
 Sa_S1 = zeros(length(T_vec),1);
 Sa_S2 = zeros(length(T_vec),1);
 Sa_V1 = zeros(length(T_vec),1);
 Sa_V2 = zeros(length(T_vec),1);
 
-fprintf('Computing response spectra for scaled records...\n');
-
+% Loop through period vector and compute Sa for each record at each period
 for i = 1:length(T_vec)
+    % call period based on iteration number
     T  = T_vec(i);
+    % compute natural frequency
     wn = 2*pi/T;
 
+    % Call function for each ground motion with changing inputs for T
+    % Compute Sa from Sd, normalize by G
     [~,~,~,Sd,~,~,~,~] = SDOF_Response(T, z, ag_SLAC1_sc, dt, 0, 0);
     Sa_S1(i) = wn^2 * Sd / g;
 
@@ -96,48 +107,51 @@ for i = 1:length(T_vec)
     Sa_V2(i) = wn^2 * Sd / g;
 end
 
+% Find mean using the average of the four records
 Sa_mean_DBE = (Sa_S1 + Sa_S2 + Sa_V1 + Sa_V2) / 4;
 
 
+%% Find Sd for DBE at T = 0.6 seconds with 2% damping
+% Use same initial function, but adjust period and damping ratios
+    [~,~,~,Sd_d_S1,~,~,~,~] = SDOF_Response(0.6, 0.02, ag_SLAC1_sc, dt, 0, 0);
 
+    [~,~,~,Sd_d_S2,~,~,~,~] = SDOF_Response(0.6, 0.02, ag_SLAC2_sc, dt, 0, 0);
 
+    [~,~,~,Sd_d_V1,~,~,~,~] = SDOF_Response(0.6, 0.02, ag_VA1_sc, dt, 0, 0);
 
+    [~,~,~,Sd_d_V2,~,~,~,~] = SDOF_Response(0.6, 0.02, ag_VA2_sc, dt, 0, 0);
 
+    % find mean and max based on individual max spectral displacements
+    Sd_d_mean = (Sd_d_S1 + Sd_d_S2 + Sd_d_V1 + Sd_d_V2) / 4;
+    Sa_d_max = max([Sd_d_S1, Sd_d_S2, Sd_d_V1, Sd_d_V2]);
 
-
-
-%% FROM HERE IDK
-% %% Print Sa values at T = 0.6s
-% Sa_S1_06  = interp1(T_vec, Sa_S1,        T_struct);
-% Sa_S2_06  = interp1(T_vec, Sa_S2,        T_struct);
-% Sa_V1_06  = interp1(T_vec, Sa_V1,        T_struct);
-% Sa_V2_06  = interp1(T_vec, Sa_V2,        T_struct);
-% Sa_mean06 = interp1(T_vec, Sa_mean_DBE,  T_struct);
-% 
-% fprintf('\n=== Sa at T=0.6s (DBE scaled, 5%% damping) ===\n');
-% fprintf('SLAC-1: %.4f g\n', Sa_S1_06);
-% fprintf('SLAC-2: %.4f g\n', Sa_S2_06);
-% fprintf('VA-1:   %.4f g\n', Sa_V1_06);
-% fprintf('VA-2:   %.4f g\n', Sa_V2_06);
-% fprintf('Mean:   %.4f g\n', Sa_mean06);
+    % print displacement values for answer table in number 8
+fprintf('\n Sd at T=0.6s (DBE scaled, 2%% damping) \n');
+fprintf('SLAC-1: %.4f cm\n', Sd_d_S1);
+fprintf('SLAC-2: %.4f cm\n', Sd_d_S2);
+fprintf('VA-1:   %.4f cm\n', Sd_d_V1);
+fprintf('VA-2:   %.4f cm\n', Sd_d_V2);
+fprintf('Mean:   %.4f cm\n', Sd_d_mean);
+fprintf('Max:   %.4f cm\n', Sa_d_max);
 
 %% Plot DBE scaled spectra
 idx_plot = T_vec <= 2.0;
 idx_dbe  = T_dbe <= 2.0;
 
+% plot each sa for 4 cases, mean, and target design dbe
 figure;
-plot(T_vec(idx_plot), Sa_S1(idx_plot),       'b',   'LineWidth', 1.2); hold on;
-plot(T_vec(idx_plot), Sa_S2(idx_plot),       'b--', 'LineWidth', 1.2);
-plot(T_vec(idx_plot), Sa_V1(idx_plot),       'r',   'LineWidth', 1.2);
-plot(T_vec(idx_plot), Sa_V2(idx_plot),       'r--', 'LineWidth', 1.2);
-plot(T_dbe(idx_dbe),  Sa_dbe(idx_dbe),       'k',   'LineWidth', 2.5);
-plot(T_vec(idx_plot), Sa_mean_DBE(idx_plot), 'g',   'LineWidth', 2.5);
-xline(T_lo, '--k', '0.2T = 0.12s', 'LabelVerticalAlignment', 'bottom');
-xline(T_hi, '--k', '2.0T = 1.20s', 'LabelVerticalAlignment', 'bottom');
-xline(T_struct, '--m', 'T = 0.6s', 'LabelVerticalAlignment', 'bottom');
+plot(T_vec(idx_plot), Sa_S1(idx_plot),'b', 'LineWidth',1.2); hold on;
+plot(T_vec(idx_plot), Sa_S2(idx_plot),'m','LineWidth',1.2);
+plot(T_vec(idx_plot), Sa_V1(idx_plot),'g','LineWidth',1.2);
+plot(T_vec(idx_plot), Sa_V2(idx_plot),'c','LineWidth',1.2);
+plot(T_dbe(idx_dbe),  Sa_dbe(idx_dbe),'k','LineWidth',2.2);
+plot(T_vec(idx_plot), Sa_mean_DBE(idx_plot),'r','LineWidth',2.2);
+
+
 xlabel('Period T (s)');
 ylabel('S_a (g)');
-title('Scaled Ground Motion Spectra — DBE Level');
+title('Scaled Ground Motion Spectra: DBE Level');
+
 legend('SLAC-1','SLAC-2','VA-1','VA-2','DBE Target','Mean of 4 Records', ...
        'Location','northeast');
 grid on;
