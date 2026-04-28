@@ -2,7 +2,7 @@
 clc; clear; close all
 
 %% BILINEAR FUNCTION WITH AUTOMATIC TIME STEPPING COMMENTED OUT
-function [u, ud, udd_abs, Fs, Sd_inelastic, mu] = Bilinear_SDOF_Response_NL(Tn, z, ug, dt, u0, ud0, strength_input, input_type,alpha, method)
+function [u, ud, udd_abs, Fs, Sd_inelastic, mu] = Bilinear_SDOF_Response_NL_No(Tn, z, ug, dt, u0, ud0, strength_input, input_type,alpha, method)
 % Bilinear SDOF system
 % Uses Newmark's method (average or linear acceleration)
 % State determination based on displacement (FLAG system)
@@ -254,7 +254,7 @@ ag  = ag_g * g;
 dt  = t(2) - t(1);   
 
 % Call function
-[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL(T, z, ag, dt, 0, 0, Cy, 'Cy',a, 'linear');
+[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
 t_02 = t;
@@ -269,7 +269,7 @@ t_new = (t(1): dt : t(end));
 ag_new = interp1(t, ag, t_new, 'linear');
 
 % Call function
-[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
+[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
 t_01 = t_new;
@@ -284,7 +284,7 @@ t_new = (t(1): dt : t(end));
 ag_new = interp1(t, ag, t_new, 'linear');
 
 % Call function
-[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
+[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
 t_002 = t_new;
@@ -299,7 +299,7 @@ t_new = (t(1): dt : t(end));
 ag_new = interp1(t, ag, t_new, 'linear');
 
 % Call function
-[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
+[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
 t_0005 = t_new;
