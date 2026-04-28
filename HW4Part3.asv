@@ -6,7 +6,7 @@ z     = 0.05;
 alpha = -0.15;
 
 %% FEMA 440
-% R = delta d / delta y + abs (ae)^-t/4
+% R = delta d / delta y ++ abs (ae)^-t/4
 % t = 1+0.15ln(T)
 
 t  = 1 + 0.15 * log(T);  
@@ -53,7 +53,7 @@ Rc_440A = (dy_dc_ratio)^(a_440A) + b_440A * Te/(3*abs(gamma)) + 0;
 
 %%  SUMMARY TABLE
 %  Rc_numerical(i) = Ce_i / Cy_min_i  for each record i
-Rc_numerical = [3.7700, 3.2563, 4.0773, 3.3893, 5.2659];  % [Parking, SLAC-1, SLAC-2, VA-1, VA-2]
+Rc_numerical = [3.7700, 3.2563, 4.0773, 3.3938, 5.2715];  % [Parking, SLAC-1, SLAC-2, VA-1, VA-2]
 Rc_avg_numerical = mean(Rc_numerical);
 record_names = {'Parking','SLAC-1','SLAC-2','VA-1','VA-2'};
 

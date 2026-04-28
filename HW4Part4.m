@@ -230,8 +230,6 @@ mu           = Sd_inelastic / uy;   % peak ductility demand
 
 end
 
-
-
 %% Define structure conditions
 T = 0.4;
 z = 0.02;
@@ -252,18 +250,20 @@ ag  = ag_g * g;
 %% For time step 0.02 case (record)
 dt  = t(2) - t(1);   
 
-% extend acceleration vector
+% extend acceleration vector to find residual case
 ag_new = [ag; zeros((100/dt), 1)];
 
 % Call function
 [u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
+% Extend time vector to match other results
 t_02 = [t; t(end) + (1:(100/dt))' * dt];
 u_02 = u;
 Sd_02 = Sd;
-u_res_02 = abs(u(end));  % check this for residual disp calc
-
+% residual disp is as function reaches equilibrium with no continued ground
+% motion
+u_res_02 = abs(u(end));  
 %% For time step case 0.0100 
 
 dt = 0.0100;
@@ -277,9 +277,12 @@ ag_new = [ag_new, zeros(1, 100/dt)];
 [u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
+% Extend time vector to match other results
 t_01 = [t_new, t_new(end) + (1:(100/dt)) * dt];
 u_01 = u;
 Sd_01 = Sd;
+% residual disp is as function reaches equilibrium with no continued ground
+% motion
 u_res_01 = abs(u(end));  % check this for residual disp calc
 
 %% For time step case 0.0020
@@ -296,9 +299,12 @@ ag_new = [ag_new, zeros(1, 100/dt)];
 [u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
+% Extend time vector to match other results
 t_002 = [t_new, t_new(end) + (1:(100/dt)) * dt];
 u_002 = u;
 Sd_002 = Sd;
+% residual disp is as function reaches equilibrium with no continued ground
+% motion
 u_res_002 = abs(u(end));  % check this for residual disp calc
 
 %% For time step case 0.0005
@@ -314,9 +320,12 @@ ag_new = [ag_new, zeros(1, (100/dt))];
 [u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
+% Extend time vector to match other results
 t_0005 = [t_new, t_new(end) + (1:(100/dt)) * dt];
 u_0005 = u;
 Sd_0005 = Sd;
+% residual disp is as function reaches equilibrium with no continued ground
+% motion
 u_res_0005 = abs(u(end));  % check this for residual disp calc
 
 %% Print Results Table
@@ -346,8 +355,10 @@ for j = 1:4
     subplot(4,1,j);
     plot(t_j, u_j, 'Color', colors{j}, 'LineWidth', 1.2);
     ylabel('u (in)');
+    xlim([0 60])
     title(sprintf('dt = %.4f s', dt_j));
     grid on; box on;
+    
 end
 
 xlabel('Time (s)');

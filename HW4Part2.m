@@ -4,6 +4,7 @@ clc; clear; close all
 data     = readmatrix('Ground_motions_assignment_1.csv');
 t_record = data(:,1);
 dt       = t_record(2) - t_record(1);
+% get record in cm/s^2 units
 g        = 981;
 
 % Columns: 1=time, 2=Parking, 3=SLAC-1, 4=SLAC-2, 5=VA-1, 6=VA-2
@@ -13,6 +14,7 @@ ag_SLAC2 = data(:,4);
 ag_VA1   = data(:,5);
 ag_VA2   = data(:,6);
 
+% create vector to store all ground motions for iterative loop
 ground_motion = {ag_Parking,ag_SLAC1,ag_SLAC2,ag_VA1,ag_VA2};
 
 %% Part a - Calculating minimum Cy
@@ -27,28 +29,30 @@ ground_motion = {ag_Parking,ag_SLAC1,ag_SLAC2,ag_VA1,ag_VA2};
 % Iterate through Cy values to find Fs = 0 (Cy min); 
     % similar iterative structure used in HW 2 part C
 
-% Goal
-Fs_goal = 0;
 % Goal tolerance
-tol = 0.0001; % 1% tolerance
+tol = 0.0001;
 % initialize Cy result vector
 Cy = zeros(1,5);
 %% Loop through ground motions
 for i = 1:5
+    % pick ground motion associated with loop number
     ug = ground_motion{i};
     
-    % Cy parameters
+    % Cy parameters (initial)
     Cy_min = 0;
     Cy_max = 1.0;
     Cy_step = -0.0001;
 
-    % If no collapse, assume Cy(i) = Cy_max
+    % If no collapse, assume Cy(i) = Cy_max 
     Cy(i) = Cy_max;
     
     % Create for loop to try Cy values
+    % start at high and decrease to avoid discrepencies
     for j = Cy_max: Cy_step: Cy_min
+        % set trial Cy value
         Cy_try = j;
 
+        % Run function with set Cy
         [~, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL(Tn, z, ug, dt, 0, 0, Cy_try, 'Cy', a, 'linear');
 
         m  = 1;
@@ -56,14 +60,22 @@ for i = 1:5
         k  = m * wn^2;
         c  = 2 * z * wn * m;
         g  = 981;             
-    
+        
+        % Solve for yield force
         Fy = Cy_try * m * g;
+        % Solve for yield displacement given yield force
         u_y = Fy / k;
 
+        % Solve for collapse displacment given yield and alpha value
         u_collapse = u_y * (1 - 1/a);
 
+        % if the peak spectral displacement is larger than collapse
+        % displacement, the structure has collapsed and the Cy minimum
+        % (lowest Cy allowed on border of failure occurance)
         if Sd >= u_collapse
-            Cy1 = Cy_try; % Store the current Cy value
+            % Cy will be one timestep less than the current Cy (this one
+            % causes collapse so we have to go back a step)
+            Cy1 = Cy_try - Cy_step; % Store the current Cy value
             break; % Exit the loop if the tolerance condition is met
         end
     end
@@ -108,15 +120,18 @@ Ce_SLAC2 = Ce(3);
 Ce_VA1 = Ce(4);
 Ce_VA2 = Ce(5);
 
-% Compute Rc Values
+% Compute Rc Values (Ce/Cc where Cc is Cy)
 Rc_parking = Ce_parking/Cy_parking;
 Rc_SLAC1 = Ce_SLAC1/Cy_SLAC1;
 Rc_SLAC2 = Ce_SLAC2/Cy_SLAC2;
 Rc_VA1 = Ce_VA1/Cy_VA1;
 Rc_VA2 = Ce_VA2/Cy_VA2;
 
+% find average of Rc values
 Rc_avg = mean([Rc_parking, Rc_SLAC1, Rc_SLAC2, Rc_VA1, Rc_VA2]);
-% 
+
+
+%% Print results
 fprintf('Part (a): Minimum Cy\n')
 fprintf('Cy_Parking = %.4f\n', Cy_parking)
 fprintf('Cy_SLAC1   = %.4f\n', Cy_SLAC1)
