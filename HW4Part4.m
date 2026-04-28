@@ -1,7 +1,7 @@
 %% HW 4 Number 4
 clc; clear; close all
 
-%% BILINEAR FUNCTION WITH AUTOMATIC TIME STEPPING COMMENTED OUT
+%% BILINEAR FUNCTION WITH AUTOMATIC TIME STEPPING COMMENTED OUT and units as inches
 function [u, ud, udd_abs, Fs, Sd_inelastic, mu] = Bilinear_SDOF_Response_NL_No(Tn, z, ug, dt, u0, ud0, strength_input, input_type,alpha, method)
 % Bilinear SDOF system
 % Uses Newmark's method (average or linear acceleration)
@@ -32,7 +32,7 @@ m  = 1;
 wn = 2 * pi / Tn;
 k  = m * wn^2; % 2.2 Determine the tangent stiffness ki
 c  = 2 * z * wn * m;
-g  = 981;              % cm/s^2, must match units of ug
+g  = 386.2;              % cm/s^2, must match units of ug
 
 %% Yield Properties
 % Accept either yield displacement or yield seismic coefficient
@@ -238,7 +238,7 @@ T = 0.4;
 z = 0.02;
 m = 1;
 Cy = 0.4;
-a = 0.0;
+a = 0.00;
 
 %% Load El Centro Record
 % Data has two columns: time (s) and acceleration (g)

@@ -32,7 +32,7 @@ m  = 1;
 wn = 2 * pi / Tn;
 k  = m * wn^2; % 2.2 Determine the tangent stiffness ki
 c  = 2 * z * wn * m;
-g  = 981;              % cm/s^2, must match units of ug
+g  = 386.2;              % cm/s^2, must match units of ug
 
 %% Yield Properties
 % Accept either yield displacement or yield seismic coefficient
