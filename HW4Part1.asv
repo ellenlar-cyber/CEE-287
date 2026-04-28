@@ -27,8 +27,8 @@ z     = 0.05;   % damping ratio
 alpha = -0.15;  % post-yield stiffness ratio
  
 %% LINEAR ELASTIC
-[u_LE, ~, ~, Sd_LE_cm, ~, ~, ~, ~] = SDOF_Response(Tn, z, ag_fine,  dt_fine, 0, 0);
-t_LE   = (0:length(u_LE)-1)' *  dt_fine;
+[u_LE, ~, ~, Sd_LE_cm, ~, ~, ~, ~] = SDOF_Response(Tn, z, ag_fine, dt, 0, 0);
+t_LE   = (0:length(u_LE)-1)' * dt;
 u_LE_in = u_LE * cm2in;
  
 % Elastic strength demand
@@ -52,10 +52,10 @@ for ri = 1:length(R_vals)
  
     % EPP (alpha = 0)
     [u_epp, ~, ~, ~, Sd_epp, mu_epp] = SDOF_Response_NL_1(...
-        Tn, z, ag_fine, dt_fine, 0, 0, Cy, 'Cy', 'average');
+        Tn, z, ag_fine, dt, 0, 0, Cy, 'Cy', 'average');
     t_epp = (0:length(u_epp)-1)' * (Tn/40);
     % If no interpolation happened (dt < Tn/40), use original dt
-    if dt_fine <= Tn/40
+    if dt <= Tn/40
         t_epp = (0:length(u_epp)-1)' * dt;
     end
     u_epp_in  = u_epp * cm2in;
@@ -63,9 +63,9 @@ for ri = 1:length(R_vals)
  
     % Bilinear (alpha = -0.15)
     [u_bl, ~, ~, ~, Sd_bl, mu_bl] = Bilinear_SDOF_Response_NL(...
-        Tn, z, ag_fine,  dt_fine, 0, 0, Cy, 'Cy', alpha, 'average');
-    t_bl = (0:length(u_bl)-1)' *  dt_fine;
-    if  dt_fine > Tn/40
+        Tn, z, ag_fine, dt, 0, 0, Cy, 'Cy', alpha, 'average');
+    t_bl = (0:length(u_bl)-1)' * dt;
+    if dt > Tn/40
         t_bl = (0:length(u_bl)-1)' * (Tn/40);
     end
     u_bl_in  = u_bl * cm2in;
