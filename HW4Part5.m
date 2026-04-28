@@ -1,7 +1,7 @@
-%% HW 4 Number 5
+%% HW 4 Number 4
 clc; clear; close all
 
-%% BILINEAR FUNCTION WITH AUTOMATIC TIME STEPPING COMMENTED OUT
+%% BILINEAR FUNCTION WITH AUTOMATIC TIME STEPPING COMMENTED OUT and units as inches
 function [u, ud, udd_abs, Fs, Sd_inelastic, mu] = Bilinear_SDOF_Response_NL_No(Tn, z, ug, dt, u0, ud0, strength_input, input_type,alpha, method)
 % Bilinear SDOF system
 % Uses Newmark's method (average or linear acceleration)
@@ -17,7 +17,7 @@ function [u, ud, udd_abs, Fs, Sd_inelastic, mu] = Bilinear_SDOF_Response_NL_No(T
 %   strength_input = value of either Cy or uy
 %   input_type     = 'Cy' or 'uy'
 %   alpha          = post-yield stiffness ratio 
-%   method         = 'average' (unconditionally stable) or 'linear' (conditionally stable)
+%   method         = 'average' or 'linear'
 %
 % OUTPUTS:
 %   u             = relative displacement time history
@@ -68,8 +68,7 @@ end
 
 %% Time Step Check
 % If record dt > Tn/40, interpolate the accelerogram to a finer time step
-% This is needed to correctly capture yielding and unloading events
-% particularly important for short period systems
+
 % dt_max = Tn / 40;
 % if dt > dt_max
 %     t_orig = (0:length(ug)-1)' * dt;
@@ -253,14 +252,17 @@ ag  = ag_g * g;
 %% For time step 0.02 case (record)
 dt  = t(2) - t(1);   
 
+% extend acceleration vector
+ag_new = [ag; zeros((100/dt), 1)];
+
 % Call function
-[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag, dt, 0, 0, Cy, 'Cy',a, 'linear');
+[u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
-t_02 = t;
+t_02 = [t; t(end) + (1:(100/dt))' * dt];
 u_02 = u;
 Sd_02 = Sd;
-u_res_02 = u(end);  % check this for residual disp calc
+u_res_02 = abs(u(end));  % check this for residual disp calc
 
 %% For time step case 0.0100 
 
@@ -268,14 +270,17 @@ dt = 0.0100;
 t_new = (t(1): dt : t(end));
 ag_new = interp1(t, ag, t_new, 'linear');
 
+% extend ag_new
+ag_new = [ag_new, zeros(1, 100/dt)];
+
 % Call function
 [u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
-t_01 = t_new;
+t_01 = [t_new, t_new(end) + (1:(100/dt)) * dt];
 u_01 = u;
 Sd_01 = Sd;
-u_res_01 = u(end);  % check this for residual disp calc
+u_res_01 = abs(u(end));  % check this for residual disp calc
 
 %% For time step case 0.0020
 
@@ -283,14 +288,18 @@ dt = 0.0020;
 t_new = (t(1): dt : t(end));
 ag_new = interp1(t, ag, t_new, 'linear');
 
+
+% extend ag_new
+ag_new = [ag_new, zeros(1, 100/dt)];
+
 % Call function
 [u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
-t_002 = t_new;
+t_002 = [t_new, t_new(end) + (1:(100/dt)) * dt];
 u_002 = u;
 Sd_002 = Sd;
-u_res_002 = u(end);  % check this for residual disp calc
+u_res_002 = abs(u(end));  % check this for residual disp calc
 
 %% For time step case 0.0005
 
@@ -298,16 +307,19 @@ dt = 0.0005;
 t_new = (t(1): dt : t(end));
 ag_new = interp1(t, ag, t_new, 'linear');
 
+% extend ag_new
+ag_new = [ag_new, zeros(1, (100/dt))];
+
 % Call function
 [u, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL_No(T, z, ag_new, dt, 0, 0, Cy, 'Cy',a, 'linear');
 
 % Store values
-t_0005 = t_new;
+t_0005 = [t_new, t_new(end) + (1:(100/dt)) * dt];
 u_0005 = u;
 Sd_0005 = Sd;
-u_res_0005 = u(end);  % check this for residual disp calc
+u_res_0005 = abs(u(end));  % check this for residual disp calc
 
-%% Print Results
+%% Print Results Table
 
 fprintf('Problem 5: Bilinear SDOF El Centro NS\n');
 fprintf('%-12s %-18s %-18s\n', 'dt (s)', 'Peak Sd (in)', 'Residual u (in)');
@@ -324,7 +336,7 @@ cases = {t_02,   u_02,   0.0200; ...
          t_002,  u_002,  0.0020; ...
          t_0005, u_0005, 0.0005};
 
-colors = {'#1f77b4','#d62728','#2ca02c','#9467bd'};
+colors = {'r','g','b','m'};
 
 for j = 1:4
     t_j  = cases{j,1}';
@@ -339,5 +351,4 @@ for j = 1:4
 end
 
 xlabel('Time (s)');
-sgtitle('Problem 5: Displacement Time History', ...
-    'FontSize', 13, 'FontWeight', 'bold');
+sgtitle('Prob 5: Displacement Time History')
