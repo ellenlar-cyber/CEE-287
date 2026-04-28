@@ -16,7 +16,7 @@ z     = 0.05;    % damping ratio
 alpha = -0.15;   % post-yield stiffness ratio (negative = degrading)
 
 %  Rc_numerical(i) = Ce_i / Cy_min_i  for each record i
-Rc_numerical = [5, 6, 7, 8, 9];  % [Parking, SLAC-1, SLAC-2, VA-1, VA-2]
+Rc_numerical = [3.7742, 3.2584, 4.0803, 3.3938, 5.2715];  % [Parking, SLAC-1, SLAC-2, VA-1, VA-2]
 Rc_avg_numerical = mean(Rc_numerical);
 record_names = {'Parking','SLAC-1','SLAC-2','VA-1','VA-2'};
 
@@ -70,28 +70,26 @@ for i = 1:5
         'Numerical', Rc_numerical(i), record_names{i});
 end
 fprintf('%-12s  %8.3f  (average of 5 records)\n', 'Avg Numer.', Rc_avg_numerical);
-fprintf('%s\n', repmat('-',1,72));
 fprintf('%-12s  %8.3f  (FEMA 440 / ASCE 41)\n',  'FEMA440',    Rc_FEMA440);
 fprintf('%-12s  %8.3f  (FEMA 440A)\n',            'FEMA440A',   Rc_FEMA440A);
-fprintf('%s\n', repmat('=',1,72));
 
-%%  BAR CHART COMPARISON
-figure('Name','Problem 3 - Rc Comparison','Position',[100 100 800 500]);
-
-% Bars for each numerical record + average
-all_Rc     = [Rc_numerical, Rc_avg_numerical, Rc_FEMA440, Rc_FEMA440A];
-all_labels = [record_names, {'Avg Num.'}, {'FEMA 440'}, {'FEMA 440A'}];
-colors     = [repmat([0.2 0.5 0.8], 5, 1);   % blue  - numerical records
-              0.1 0.3 0.6;                    % dark blue - average
-              0.2 0.7 0.3;                    % green  - FEMA 440
-              0.7 0.2 0.7];                   % purple - FEMA 440A
-
-b = bar(all_Rc, 'FaceColor','flat');
-b.CData = colors;
-set(gca, 'XTickLabel', all_labels, 'XTick', 1:length(all_Rc));
-ylabel('R_c  (Maximum Strength Reduction Factor)');
-title(sprintf('Comparison of R_c: Numerical vs Code Equations\n T = %.1fs,  \\xi = %.0f%%,  \\alpha = %.2f', ...
-    T, z*100, alpha));
-grid on; box on;
-yline(Rc_FEMA440,      'g--', 'LineWidth', 1.5, 'Label', 'FEMA 440');
-yline(1,               'm--', 'LineWidth', 1.5, 'Label', 'FEMA 440A');
+% %%  BAR CHART COMPARISON
+% figure('Name','Problem 3 - Rc Comparison','Position',[100 100 800 500]);
+% 
+% % Bars for each numerical record + average
+% all_Rc     = [Rc_numerical, Rc_avg_numerical, Rc_FEMA440, Rc_FEMA440A];
+% all_labels = [record_names, {'Avg Num.'}, {'FEMA 440'}, {'FEMA 440A'}];
+% colors     = [repmat([0.2 0.5 0.8], 5, 1);   % blue  - numerical records
+%               0.1 0.3 0.6;                    % dark blue - average
+%               0.2 0.7 0.3;                    % green  - FEMA 440
+%               0.7 0.2 0.7];                   % purple - FEMA 440A
+% 
+% b = bar(all_Rc, 'FaceColor','flat');
+% b.CData = colors;
+% set(gca, 'XTickLabel', all_labels, 'XTick', 1:length(all_Rc));
+% ylabel('R_c  (Maximum Strength Reduction Factor)');
+% title(sprintf('Comparison of R_c: Numerical vs Code Equations\n T = %.1fs,  \\xi = %.0f%%,  \\alpha = %.2f', ...
+%     T, z*100, alpha));
+% grid on; box on;
+% yline(Rc_FEMA440,      'g--', 'LineWidth', 1.5, 'Label', 'FEMA 440');
+% yline(1,               'm--', 'LineWidth', 1.5, 'Label', 'FEMA 440A');

@@ -30,45 +30,44 @@ ground_motion = {ag_Parking,ag_SLAC1,ag_SLAC2,ag_VA1,ag_VA2};
 % Goal
 Fs_goal = 0;
 % Goal tolerance
-Cy_tol = 0.0001; % 1% tolerance
+tol = 0.0001; % 1% tolerance
 % initialize Cy result vector
 Cy = zeros(1,5);
 %% Loop through ground motions
 for i = 1:5
     ug = ground_motion{i};
-    % Initialize variables for iterative test
-    % start with elastic condition as upper bound to iterate between
-    Cy1 = 5;
-    % create an initial Cy at lower bound to iterate between
-    Cy0 = 0.0000001;
+    
+    % Cy parameters
+    Cy_min = 0;
+    Cy_max = 1.0;
+    Cy_step = -0.0001;
 
-    % while loop to continue iteration until tolerance acheived
-    while abs(Cy1-Cy0) > Cy_tol
-        Cy_1 = (Cy1+Cy0)/2;
+    % If no collapse, assume Cy(i) = Cy_max
+    Cy(i) = Cy_max;
+    
+    % Create for loop to try Cy values
+    for j = Cy_max: Cy_step: Cy_min
+        Cy_try = j;
 
-        [u,~,~, Fs,~,~] = Bilinear_SDOF_Response_NL(Tn, z, ug, dt, 0, 0, Cy_1, 'Cy',a,'average');
-       
+        [~, ~, ~, ~, Sd, ~] = Bilinear_SDOF_Response_NL(Tn, z, ug, dt, 0, 0, Cy_try, 'Cy', a, 'linear');
+
         m  = 1;
         wn = 2 * pi / Tn;
-        k  = m * wn^2; % 2.2 Determine the tangent stiffness ki
+        k  = m * wn^2;
         c  = 2 * z * wn * m;
-        g  = 981;              % cm/s^2, must match units of ug
+        g  = 981;             
+    
+        Fy = Cy_try * m * g;
+        u_y = Fy / k;
 
-         % Yield Properties
-            Fy = Cy_1 * m * g;
-            uy = Fy / k;
+        u_collapse = u_y * (1 - 1/a);
 
-
-        % Change Cy1 based on result
-        % if Fs is too high, Cy is too high, lower the upper bound
-       % CORRECT - check if it DID collapse
-    %% CHECK IF THIS IS THE PROPER ASSUMPTION
-       if any(Fs(2:end) <= 0 & abs(u(2:end)) > uy)
-           Cy0 = Cy_1;  % collapsed → raise lower bound (need MORE strength)
-       else
-           Cy1 = Cy_1;  % survived → lower upper bound (can be WEAKER)
-       end
+        if Sd >= u_collapse
+            Cy1 = Cy_try; % Store the current Cy value
+            break; % Exit the loop if the tolerance condition is met
+        end
     end
+
     Cy(i) = Cy1;
    
 end
@@ -79,26 +78,28 @@ Cy_SLAC2 = Cy(3);
 Cy_VA1 = Cy(4);
 Cy_VA2 = Cy(5);
 
+
 %% Part b - Corresponding maximum reduction factor Rc to avoid dynamic instability
 % Rc is Ce (elastic)/ Cy(inelastic)
 % Ce is Sa normalized by g
 
 % Find Ce for all gm
-  % initialize Ce result vector
+%   initialize Ce result vector
     Ce = zeros(1,5);
-%% Loop through ground motions
+
+% Loop through ground motions
 for i = 1:5
     ug = ground_motion{i};
     % start with elastic condition as upper bound to iterate between
-    C = 5;
+    Cy_elastic = 5;
 
-    [~,~,~,~,Sd,~] = Bilinear_SDOF_Response_NL(Tn, z, ug, dt, 0, 0, Cy_1, 'Cy',a,'average');
-    wn = 2*pi/Tn;
+    [~,~,~,~,Sd,~] = Bilinear_SDOF_Response_NL(Tn, z, ug, dt, 0, 0, Cy_elastic, 'Cy',a,'average');
+    
+    wn = 2 * pi / Tn;
     % Compute Sa from Sd
     Sa = wn^2 * Sd;
     % Normalize by g
     Ce(i) = Sa/g;
-   
 end
 
 Ce_parking = Ce(1);
@@ -115,21 +116,21 @@ Rc_VA1 = Ce_VA1/Cy_VA1;
 Rc_VA2 = Ce_VA2/Cy_VA2;
 
 Rc_avg = mean([Rc_parking, Rc_SLAC1, Rc_SLAC2, Rc_VA1, Rc_VA2]);
-    
-fprintf('=== Part (a): Minimum Cy ===\n')
+% 
+fprintf('Part (a): Minimum Cy\n')
 fprintf('Cy_Parking = %.4f\n', Cy_parking)
 fprintf('Cy_SLAC1   = %.4f\n', Cy_SLAC1)
 fprintf('Cy_SLAC2   = %.4f\n', Cy_SLAC2)
 fprintf('Cy_VA1     = %.4f\n', Cy_VA1)
 fprintf('Cy_VA2     = %.4f\n', Cy_VA2)
 
-fprintf('\n=== Part (b): Rc Values ===\n')
+fprintf('\nPart (b): Rc Values\n')
 fprintf('Rc_Parking = %.4f\n', Rc_parking)
 fprintf('Rc_SLAC1   = %.4f\n', Rc_SLAC1)
 fprintf('Rc_SLAC2   = %.4f\n', Rc_SLAC2)
 fprintf('Rc_VA1     = %.4f\n', Rc_VA1)
 fprintf('Rc_VA2     = %.4f\n', Rc_VA2)
 fprintf('Rc_avg     = %.4f\n', Rc_avg)    
-    
-    
+
+
     
