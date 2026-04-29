@@ -56,7 +56,7 @@ for ri = 1:length(R_vals)
     t_epp = (0:length(u_epp)-1)' * (Tn/40);
     % If no interpolation happened (dt < Tn/40), use original dt
     if dt_fine <= Tn/40
-        t_epp = (0:length(u_epp)-1)' * dt;
+        t_epp = (0:length(u_epp)-1)' * dt_fine;
     end
     u_epp_in  = u_epp * cm2in;
     Ur_epp_in = u_epp_in(end);   % residual = last value
