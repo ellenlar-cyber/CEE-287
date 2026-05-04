@@ -1,0 +1,128 @@
+function R = mdof_analysis(N, m_vec, k_vec, label)
+% Assembles M and K, runs eigenvalue analysis, computes and plot
+% INPUTS:
+%   N      - number of stories (scalar integer)
+%   m_vec  - (N x 1) floor mass vector; m_vec(j) is the mass at floor j,
+%            where j=1 is the ground floor and j=N is the roof
+%   k_vec  - (N x 1) story stiffness vector; k_vec(j) is the stiffness of
+%            story j, i.e. the spring connecting floor j-1 to floor j
+%            (k_vec(1) connects the ground to floor 1)
+%   label  - string used as the figure title (e.g. 'Problem 1 — Baseline')
+%
+% OUTPUTS:
+%   R        - struct containing the following fields:
+%   R.T      - (N x 1) natural periods in ascending order [s]
+%   R.T2T1   - period ratio T2/T1 (scalar)
+%   R.T3T1   - period ratio T3/T1 (scalar)
+%   R.PHI    - (N x N) mode shape matrix, columns normalized to unity at roof
+%              PHI(:,n) is the nth mode shape; row j corresponds to floor j
+%   R.Gamma  - (3 x 1) modal participation factors for modes 1-3
+%   R.EMS    - (N x 3) effective mode shapes; EMS(:,n) = Gamma(n)*PHI(:,n)
+%   R.beta1  - first-mode roof displacement factor (= Gamma_1 when normalized
+%              at roof); used in u_roof ≈ beta_1 * Sd  [Lec 10]
+%   R.beta2  - maximum interstory drift amplification factor; used in
+%              IDR_max ≈ beta_2 * u_roof/H  [Lec 10]
+%   R.W1frac - ratio of first-mode modal weight to total building weight
+%   R.K      - (N x N) assembled stiffness matrix
+%   R.M      - (N x N) assembled mass matrix (diagonal)
+ 
+    % Assemble mass matrix (diagonal)
+    M = diag(m_vec);
+ 
+    % Assemble stiffness matrix (tridiagonal shear building)
+    K = zeros(N);
+    for j = 1:N
+        K(j,j) = k_vec(j);
+        if j < N
+            K(j,j)   = K(j,j) + k_vec(j+1);   % story above also contributes
+            K(j,j+1) = -k_vec(j+1);
+            K(j+1,j) = -k_vec(j+1);
+        end
+    end
+ 
+    % Eigenvalue analysis-
+    [PHI_raw, OMEGA2] = eig(K, M);
+    [omega2_sorted, idx] = sort(diag(OMEGA2));
+    PHI_raw = PHI_raw(:, idx);
+    omega_n = sqrt(omega2_sorted);
+    T_n     = 2*pi ./ omega_n;
+ 
+    % Normalize mode shapes to unity at roof
+    PHI = PHI_raw;
+    for n = 1:min(3, N)
+        PHI(:,n) = PHI_raw(:,n) / PHI_raw(N,n);
+    end
+ 
+    % Period ratios 
+    T2T1 = T_n(2) / T_n(1);
+    T3T1 = T_n(3) / T_n(1);
+ 
+    % Modal participation factors, Lec 9:
+    %     Gamma_n = (phi_n' * M * 1) / (phi_n' * M * phi_n)
+    %             = sum(m_j * phi_jn) / sum(m_j * phi_jn^2)   (diagonal M)
+    Gamma = zeros(3,1);
+    for n = 1:3
+        L_n      = PHI(:,n)' * M * ones(N,1);   % = sum(m_j * phi_jn)
+        M_n      = PHI(:,n)' * M * PHI(:,n);    % = sum(m_j * phi_jn^2)
+        Gamma(n) = L_n / M_n;
+    end
+ 
+    % Effective mode shapes = Gamma_n * phi_n (Lec 9)
+    EMS = zeros(N, 3);
+    for n = 1:3
+        EMS(:,n) = Gamma(n) * PHI(:,n);
+    end
+ 
+    % beta_1: first mode participation factor
+    beta1 = Gamma(1);
+ 
+    %  beta_2: maximum interstory drift amplification factor (Lec 10)
+    %     beta_2 = max_j [ (phi_{j,1} - phi_{j-1,1}) ] * N / phi_{roof,1}
+    %     phi_{roof,1}=1 (normalized), phi_{0,1}=0 (fixed base)
+    %     IDR_max = beta_2 * u_roof / H ---
+    story_drifts1 = diff([0; PHI(:,1)]);    % drift of mode 1 at each story
+    beta2 = max(story_drifts1) * N;         % N = H/h for equal story heights
+ 
+    % First mode modal weight ratio (Lec 9/10)
+    %     W1/Wtotal = (sum m_j phi_j1)^2 / [ (sum m_j phi_j1^2) * (sum m_j) ]
+    %              = L1^2 / (M1 * m_total) 
+    L1     = PHI(:,1)' * M * ones(N,1);
+    M1     = PHI(:,1)' * M * PHI(:,1);
+    m_tot  = sum(m_vec);
+    W1frac = (L1^2 / M1) / m_tot;
+ 
+    % Print results
+    fprintf('  T1=%.4f  T2/T1=%.4f  T3/T1=%.4f\n', T_n(1), T2T1, T3T1);
+    fprintf('  Gamma_1=%.4f  Gamma_2=%.4f  Gamma_3=%.4f\n', Gamma(1),Gamma(2),Gamma(3));
+    fprintf('  beta_1=%.4f  beta_2=%.4f  W1/Wtotal=%.4f\n', beta1, beta2, W1frac);
+ 
+    % Plot effective mode shapes (separate subplot per mode)
+    floors = (1:N)';
+    figure('Name', label);
+    titles = {'Mode 1','Mode 2','Mode 3'};
+    for n = 1:3
+        subplot(1,3,n);
+        plot(EMS(:,n), floors, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 6);
+        hold on;
+        xline(0, 'k--');
+        xlabel('\Gamma_n \phi_{jn}  (Effective Mode Shape)');
+        ylabel('Floor Number');
+        title(titles{n});
+        grid on;
+        ylim([0 N+0.5]);
+    end
+    sgtitle(label);
+ 
+    % Save mdof information
+    R.T      = T_n;
+    R.T2T1   = T2T1;
+    R.T3T1   = T3T1;
+    R.PHI    = PHI;
+    R.Gamma  = Gamma;
+    R.EMS    = EMS;
+    R.beta1  = beta1;
+    R.beta2  = beta2;
+    R.W1frac = W1frac;
+    R.K      = K;
+    R.M      = M;
+end
