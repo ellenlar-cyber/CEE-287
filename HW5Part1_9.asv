@@ -83,10 +83,10 @@ for i = 1:length(periodRatios)
     periodRatios(i) = 1 / (2 * n - 1);  % For n = 2
 end
 
-fprintf('\nPROBLEM 10: Approximate Results');
+fprintf('\nProblem 10: Approximate Results \n');
 fprintf('\nPeriod Ratios: \n');
-fprintf('T2/T1 = %.4f\n',    periodRatios(1));
-fprintf('T3/T1 = %.4f\n',    periodRatios(2));
+fprintf('T2/T1=%.4f\n',    periodRatios(1));
+fprintf('T3/T1=%.4f\n',    periodRatios(2));
 
 % Calculate effective mode shapes based on the period ratios
 % 3 modes to calculate mode shapes for:
@@ -132,5 +132,5 @@ end
 
 fprintf('\nModal Participation Factors: \n');
 fprintf('Gamma 1 = %.4f\n',modalParticipationFactors(1));
-fprintf('Gamma 2 = %.4f\n',modalParticipationFactors(2));
-fprintf('Gamma 3 = %.4f\n',modalParticipationFactors(3));
+fprintf('Gamma 2 =%.4f\n',modalParticipationFactors(2));
+fprintf('Gamma 3 =%.4f\n',modalParticipationFactors(3));
