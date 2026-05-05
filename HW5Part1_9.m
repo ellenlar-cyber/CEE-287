@@ -134,3 +134,40 @@ fprintf('\nModal Participation Factors: \n');
 fprintf('Gamma 1 = %.4f\n',modalParticipationFactors(1));
 fprintf('Gamma 2 = %.4f\n',modalParticipationFactors(2));
 fprintf('Gamma 3 = %.4f\n',modalParticipationFactors(3));
+
+% beta 1 is gamma 1
+Beta1 = modalParticipationFactors(1);
+
+% BETA 2 calculation same as function
+   for n = 1:min(3, N)
+        PHI(:,n) = modeShapes(:,n) / modeShapes(N,n);
+    end
+story_drifts1 = diff([0; PHI(:,1)]);    % drift of mode 1 at each story
+Beta2 = max(story_drifts1) * N; 
+
+% Effective mode shapes = Gamma_n * phi_n (Lec 9)
+
+    EMS = zeros(N, 3);
+    for n = 1:3
+        EMS(:,n) = modalParticipationFactors(n) * PHI(:,n);
+    end
+% Reconstruct mass matrix
+N = 9;
+m = 1;   % floor mass
+k = 1;   % story stiffness
+
+m_vec = m * ones(N, 1);
+k_vec = k * ones(N, 1);
+
+
+% ratio of the first mode modal weight to total weight to the exact values computed in problem 1
+% W1/Wtotal = (sum m_j phi_j1)^2 / [ (sum m_j phi_j1^2) * (sum m_j) ]
+M = diag(m_vec);
+
+% Gamma Phi Sum
+Gamma = modalParticipationFactors;
+
+% Calculate the ratio of the first mode modal weight to total weight
+W1 = sum(Gamma(1)*PHI(:,1));
+buildingweight = sum(diag(M));
+W1frac = W1/buildingweight;
