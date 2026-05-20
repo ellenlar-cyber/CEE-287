@@ -70,7 +70,7 @@ end
 
 
 % base shear
-fprintf('\n--- Base Shear Summary ---\n');
+fprintf('\nBase Shear Summary\n');
 fprintf('%-10s %-12s %-12s\n','Method','V (kips)','V/W (%%)');
 fprintf('%s\n', repmat('-',1,36));
 fprintf('%-10s %-12.2f %-12.4f\n', 'ESA', V_ESA, VW_ESA*100);

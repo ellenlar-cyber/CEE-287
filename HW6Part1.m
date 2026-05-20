@@ -59,10 +59,26 @@ fprintf('\n Modal Participation Factors (all 9 modes) \n');
 for n = 1:N
     fprintf('  Gamma_%d = %.4f\n', n, Gamma_all(n));
 end
+fprintf('\n Effective Mode Shapes\n');
+% header
+fprintf('%-6s', 'Floor');
+for n = 1:N
+    fprintf('%-10s', sprintf('Mode %d', n));
+end
+fprintf('\n%s\n', repmat('-', 1, 6 + 10*N));
+
+% values
+for i = 1:N
+    fprintf('%-6d', i);
+    for n = 1:N
+        fprintf('%-10.4f', EMS_all(i,n));
+    end
+    fprintf('\n');
+end
 
 %% Plot all 9 effective mode shapes
 floors = (1:N)';
-figure('Name','HW6 Part 1 — All 9 Effective Mode Shapes');
+figure('Name','HW6 Part 1: All 9 Effective Mode Shapes');
 for n = 1:N
     subplot(3,3,n);
     plot(EMS_all(:,n), floors, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 5);
@@ -74,7 +90,7 @@ for n = 1:N
     grid on;
     ylim([0 N+0.5]);
 end
-sgtitle('Effective Mode Shapes — 9-Story Shear Building');
+sgtitle('Effective Mode ShapesL: 9-Story Shear Building');
 
 %% Save outputs for use in later parts
 save('HW6_Part1_results.mat', 'R', 'PHI_norm', 'Gamma_all', 'EMS_all', ...

@@ -47,7 +47,7 @@ beta2_exact = Beta2_1;
 % interstory drift ratio
 IDR_exact = Sd1*beta1_exact*beta2_exact/(H_total);
 
-fprintf('     PART 5: APPROXIMATE METHOD RESULTS    \n');
+fprintf('Part 5: Approximate Results Method\n');
 fprintf('Sd(T1) = %.4f in\n\n', Sd1);
 
 fprintf('%-22s %12s %12s\n', 'Parameter', 'Approx', 'Exact');

@@ -78,7 +78,7 @@ V_RHA = Vs_RHA(1);
 % as fraction of total weight of building:
 VW_RHA = V_RHA / W_tot;
 
-fprintf('\n--- RHA Results (5 modes) ---\n');
+fprintf('\nRHA Results (5 modes)\n');
 fprintf('Base shear V_RHA   = %.2f kips\n', V_RHA);
 fprintf('V_RHA / W_total    = %.4f (%.2f%%)\n', VW_RHA, VW_RHA*100);
 
@@ -140,11 +140,9 @@ pct_Vs_RHA = (abs(Vs_modes_atPeak)./ sum(abs(Vs_modes_atPeak),2)) * 100;
 pct_IDR = (abs(IDR_modes_atPeak)./ sum(abs(IDR_modes_atPeak),2)) * 100;
 
 %% Print modal contributions at peak
-fprintf('\n========================================\n');
 fprintf('   MODAL CONTRIBUTIONS AT PEAK VALUES   \n');
-fprintf('========================================\n');
 
-fprintf('\n--- Peak Displacements (in) ---\n');
+fprintf('\nPeak Displacements (in)\n');
 fprintf('%-6s %-8s %-8s %-8s %-8s %-8s %-8s\n', ...
     'Floor','M1','M2','M3','M4','M5','Total');
 for i = 1:N
@@ -152,7 +150,7 @@ for i = 1:N
         i, u_modes_atPeak(i,:), u_RHA(i));
 end
 
-fprintf('\n--- Peak Lateral Forces (kips) ---\n');
+fprintf('\nPeak Lateral Forces (kips)\n');
 fprintf('%-6s %-8s %-8s %-8s %-8s %-8s %-8s\n', ...
     'Floor','M1','M2','M3','M4','M5','Total');
 for i = 1:N
@@ -160,7 +158,7 @@ for i = 1:N
         i, F_modes_atPeak(i,:), F_RHA(i));
 end
 
-fprintf('\n--- Peak Story Shears (kips) ---\n');
+fprintf('\nPeak Story Shears (kips)\n');
 fprintf('%-6s %-8s %-8s %-8s %-8s %-8s %-8s\n', ...
     'Story','M1','M2','M3','M4','M5','Total');
 for i = 1:N
@@ -168,7 +166,7 @@ for i = 1:N
         i, Vs_modes_atPeak(i,:), Vs_RHA(i));
 end
 
-fprintf('\n--- Peak IDR (%%) ---\n');
+fprintf('\nPeak IDR (%%)\n');
 fprintf('%-6s %-8s %-8s %-8s %-8s %-8s %-8s\n', ...
     'Story','M1','M2','M3','M4','M5','Total');
 for i = 1:N
@@ -176,7 +174,7 @@ for i = 1:N
         i, IDR_modes_atPeak(i,:)*100, IDR_RHA(i)*100);
 end
 
-fprintf('\n--- Mode %% Contributions at Peak ---\n');
+fprintf('\nMode %% Contributions at Peak\n');
 fprintf('\nDisplacements:\n');
 fprintf('%-6s %-8s %-8s %-8s %-8s %-8s\n','Floor','M1%%','M2%%','M3%%','M4%%','M5%%');
 for i = 1:N
@@ -189,6 +187,43 @@ for i = 1:N
     fprintf('%-6d %-8.1f %-8.1f %-8.1f %-8.1f %-8.1f\n', i, pct_Vs_RHA(i,:));
 end
 
+%% part 4 plots
+figure('Name','HW6 Part 4 — RHA Profiles');
+
+% Lateral forces
+subplot(1,4,1);
+barh(floors, F_RHA, 0.5, 'FaceColor',[0.2 0.5 0.8]);
+xlabel('F_i (kips)');
+ylabel('Floor');
+title('Lateral Forces');
+grid on; ylim([0 N+1]);
+
+% Story shears
+subplot(1,4,2);
+plot(Vs_RHA, stories, 'b-o', 'LineWidth', 1.5, 'MarkerFaceColor','b');
+xlabel('V_x (kips)');
+ylabel('Story');
+title('Story Shears');
+grid on; ylim([0 N+1]);
+
+% Floor displacements
+subplot(1,4,3);
+plot([0; u_RHA], [0; floors], 'b-o', 'LineWidth', 1.5, 'MarkerFaceColor','b');
+xlabel('u_i (in)');
+ylabel('Floor');
+title('Floor Displacements');
+grid on; ylim([0 N+1]);
+
+% Interstory drift ratios
+subplot(1,4,4);
+plot(IDR_RHA*100, stories, 'b-o', 'LineWidth', 1.5, 'MarkerFaceColor','b');
+xlabel('IDR (%)');
+ylabel('Story');
+title('Interstory Drift Ratios');
+grid on; ylim([0 N+1]);
+
+sgtitle(sprintf('RHA Results — 5 Modes  (V = %.1f kips = %.2f%% W)', ...
+    V_RHA, VW_RHA*100));
 
 %% HW 6 Problem 6
 % (a) plot lateral forces when roof displacement is maximum
@@ -230,7 +265,25 @@ Vs_esa = Vs_ESA;
 % get shear forces maximum calculated for RHA (part 4)
 Vs_max = Vs_RHA;
 
+fprintf('Part 6 Results\n');
 
+fprintf('\nLateral Forces (kips) \n');
+fprintf('%-6s %-12s %-12s %-12s %-12s\n', ...
+    'Floor','ESA','Peak Roof','Peak Base','RHA Peak');
+fprintf('%s\n', repmat('-',1,54));
+for i = 1:N
+    fprintf('%-6d %-12.4f %-12.4f %-12.4f %-12.4f\n', ...
+        i, F_esa(i), F_roofmax(i), F_basemax(i), F_max(i));
+end
+
+fprintf('\nStory Shears (kips)\n');
+fprintf('%-6s %-12s %-12s %-12s %-12s\n', ...
+    'Story','ESA','Peak Roof','Peak Base','RHA Peak');
+fprintf('%s\n', repmat('-',1,54));
+for i = 1:N
+    fprintf('%-6d %-12.4f %-12.4f %-12.4f %-12.4f\n', ...
+        i, Vs_esa(i), Vs_roofmax(i), Vs_basemax(i), Vs_max(i));
+end
 %% Figure — Part 6
 figure('Name', 'Part 6');
 
@@ -247,7 +300,7 @@ legend('ESA', 'Peak Roof Disp', 'Peak Base Shear', 'RHA Peak', ...
     'Location', 'SouthEast');
 grid on; ylim([0 N+1]);
 
-% --- Story Shears ---
+% story shears
 subplot(1,2,2);
 plot(Vs_esa,     stories, 'b-o', 'LineWidth', 1.5); hold on;
 plot(Vs_roofmax, stories, 'r-o', 'LineWidth', 1.5);

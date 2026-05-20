@@ -84,11 +84,11 @@ for n = 1:3
 end
 
 %% Print results
-fprintf('\n--- RSA Results (SRSS, 5 modes) ---\n');
+fprintf('\nRSA Results (SRSS, 5 modes)\n');
 fprintf('Base shear V_RSA   = %.2f kips\n', V_RSA);
 fprintf('V_RSA / W_total    = %.4f (%.2f%%)\n', VW_RSA, VW_RSA*100);
 
-fprintf('\n--- RSA: Floor/Story Quantities ---\n');
+fprintf('\nRSA: Floor/Story Quantities\n');
 fprintf('%-6s %-12s %-14s %-12s %-12s\n', ...
     'Floor','F_i (kips)','Vs_x (kips)','u_i (in)','IDR_i (%%)');
 for i = 1:N
@@ -96,25 +96,25 @@ for i = 1:N
         i, F_RSA(i), Vs_RSA(i), u_RSA(i), IDR_RSA(i)*100);
 end
 
-fprintf('\n--- Mode %% Contribution to Lateral Forces (modes 1-3 / 5-mode SRSS) ---\n');
+fprintf('\nMode %% Contribution to Lateral Forces (modes 1-3 / 5-mode SRSS)\n');
 fprintf('%-6s %-12s %-12s %-12s\n','Floor','Mode 1 (%%)','Mode 2 (%%)','Mode 3 (%%)');
 for i = 1:N
     fprintf('%-6d %-12.1f %-12.1f %-12.1f\n', i, pct_F(i,1), pct_F(i,2), pct_F(i,3));
 end
 
-fprintf('\n--- Mode %% Contribution to Story Shears (modes 1-3 / 5-mode SRSS) ---\n');
+fprintf('\nMode %% Contribution to Story Shears (modes 1-3 / 5-mode SRSS)\n');
 fprintf('%-6s %-12s %-12s %-12s\n','Story','Mode 1 (%%)','Mode 2 (%%)','Mode 3 (%%)');
 for i = 1:N
     fprintf('%-6d %-12.1f %-12.1f %-12.1f\n', i, pct_Vs(i,1), pct_Vs(i,2), pct_Vs(i,3));
 end
 
-fprintf('\n--- Mode %% Contribution to Displacements (modes 1-3 / 5-mode SRSS) ---\n');
+fprintf('\nMode %% Contribution to Displacements (modes 1-3 / 5-mode SRSS)\n');
 fprintf('%-6s %-12s %-12s %-12s\n','Floor','Mode 1 (%%)','Mode 2 (%%)','Mode 3 (%%)');
 for i = 1:N
     fprintf('%-6d %-12.1f %-12.1f %-12.1f\n', i, pct_u(i,1), pct_u(i,2), pct_u(i,3));
 end
 
-fprintf('\n--- Mode %% Contribution to IDR (modes 1-3 / 5-mode SRSS) ---\n');
+fprintf('\nMode %% Contribution to IDR (modes 1-3 / 5-mode SRSS)\n');
 fprintf('%-6s %-12s %-12s %-12s\n','Story','Mode 1 (%%)','Mode 2 (%%)','Mode 3 (%%)');
 for i = 1:N
     fprintf('%-6d %-12.1f %-12.1f %-12.1f\n', i, pct_IDR(i,1), pct_IDR(i,2), pct_IDR(i,3));
@@ -122,8 +122,8 @@ end
 
 %% Plots
 
-% --- Figure 1: RSA profiles vs ESA ---
-figure('Name','HW6 Part 3 — RSA vs ESA Profiles');
+% Figure 1: RSA profiles vs ESA
+figure('Name','HW6 Part 3: RSA vs ESA Profiles');
 
 subplot(1,4,1);
 barh(floors, [F_ESA, F_RSA], 0.6);
@@ -134,7 +134,7 @@ grid on; ylim([0 N+1]);
 
 subplot(1,4,2);
 plot(Vs_ESA, stories, 'b-o', 'LineWidth',1.5, 'MarkerFaceColor','b'); hold on;
-plot(Vs_RSA, stories, 'r-s', 'LineWidth',1.5, 'MarkerFaceColor','r');
+plot(Vs_RSA, stories, 'r-o', 'LineWidth',1.5, 'MarkerFaceColor','r');
 xlabel('V_x (kips)'); ylabel('Story');
 title('Story Shears');
 legend('ESA','RSA','Location','SouthEast');
@@ -142,7 +142,7 @@ grid on; ylim([0 N+1]);
 
 subplot(1,4,3);
 plot([0; u_ESA], [0; floors], 'b-o', 'LineWidth',1.5, 'MarkerFaceColor','b'); hold on;
-plot([0; u_RSA], [0; floors], 'r-s', 'LineWidth',1.5, 'MarkerFaceColor','r');
+plot([0; u_RSA], [0; floors], 'r-o', 'LineWidth',1.5, 'MarkerFaceColor','r');
 xlabel('u_i (in)'); ylabel('Floor');
 title('Displacements');
 legend('ESA','RSA','Location','SouthEast');
@@ -150,7 +150,7 @@ grid on; ylim([0 N+1]);
 
 subplot(1,4,4);
 plot(IDR_ESA*100, stories, 'b-o', 'LineWidth',1.5, 'MarkerFaceColor','b'); hold on;
-plot(IDR_RSA*100, stories, 'r-s', 'LineWidth',1.5, 'MarkerFaceColor','r');
+plot(IDR_RSA*100, stories, 'r-o', 'LineWidth',1.5, 'MarkerFaceColor','r');
 xlabel('IDR (%)'); ylabel('Story');
 title('Interstory Drift Ratios');
 legend('ESA','RSA','Location','SouthEast');
@@ -158,26 +158,26 @@ grid on; ylim([0 N+1]);
 
 sgtitle('RSA (5 modes, SRSS) vs ESA');
 
-% --- Figure 2: Mode % contributions ---
-figure('Name','HW6 Part 3 — Mode Contributions');
+% Figure 2: Mode % contributions 
+figure('Name','HW6 Part 3: Mode Contributions');
 
 subplot(1,4,1);
-plot(pct_F(:,1), floors,'b-o', pct_F(:,2), floors,'r-s', pct_F(:,3), floors,'g-^','LineWidth',1.5);
+plot(pct_F(:,1), floors,'b-o', pct_F(:,2), floors,'r-o', pct_F(:,3), floors,'g-o','LineWidth',1.5);
 xlabel('Contribution (%)'); ylabel('Floor');
 title('Forces'); legend('Mode 1','Mode 2','Mode 3'); grid on; ylim([0 N+1]);
 
 subplot(1,4,2);
-plot(pct_Vs(:,1),stories,'b-o', pct_Vs(:,2),stories,'r-s', pct_Vs(:,3),stories,'g-^','LineWidth',1.5);
+plot(pct_Vs(:,1),stories,'b-o', pct_Vs(:,2),stories,'r-o', pct_Vs(:,3),stories,'g-o','LineWidth',1.5);
 xlabel('Contribution (%)'); ylabel('Story');
 title('Story Shears'); legend('Mode 1','Mode 2','Mode 3'); grid on; ylim([0 N+1]);
 
 subplot(1,4,3);
-plot(pct_u(:,1),floors,'b-o', pct_u(:,2),floors,'r-s', pct_u(:,3),floors,'g-^','LineWidth',1.5);
+plot(pct_u(:,1),floors,'b-o', pct_u(:,2),floors,'r-o', pct_u(:,3),floors,'g-o','LineWidth',1.5);
 xlabel('Contribution (%)'); ylabel('Floor');
 title('Displacements'); legend('Mode 1','Mode 2','Mode 3'); grid on; ylim([0 N+1]);
 
 subplot(1,4,4);
-plot(pct_IDR(:,1),stories,'b-o', pct_IDR(:,2),stories,'r-s', pct_IDR(:,3),stories,'g-^','LineWidth',1.5);
+plot(pct_IDR(:,1),stories,'b-o', pct_IDR(:,2),stories,'r-o', pct_IDR(:,3),stories,'g-o','LineWidth',1.5);
 xlabel('Contribution (%)'); ylabel('Story');
 title('IDR'); legend('Mode 1','Mode 2','Mode 3'); grid on; ylim([0 N+1]);
 

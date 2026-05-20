@@ -101,7 +101,7 @@ for x = 2:N
 end
 
 % Print ESA results
-fprintf('\n--- ESA Results ---\n');
+fprintf('\nESA Results\n');
 fprintf('Base shear V       = %.2f kips\n', V_ESA);
 fprintf('V / W_total        = %.4f (%.2f%%)\n', VW_ESA, VW_ESA*100);
 fprintf('\n%-6s %-12s %-14s %-14s %-14s\n', ...
@@ -114,7 +114,7 @@ end
 %% Step 5 Plots
 
 % Figure 1: Response Spectrum
-figure('Name','HW6 Part 2 — Response Spectrum');
+figure('Name','HW6 Part 2: Response Spectrum');
 plot(T_spec, Spa_spec/981, 'b-', 'LineWidth', 1.5);
 hold on;
 plot(T_modes, Spa_modes/981, 'ro', 'MarkerSize', 8, 'MarkerFaceColor','r');
@@ -124,13 +124,13 @@ for n = 1:N
 end
 xlabel('Period T (s)');
 ylabel('S_{pa} (g)');
-title('Linear Elastic Response Spectrum — \zeta = 3.5%');
+title('Linear Elastic Response Spectrum : \zeta = 3.5%');
 legend('Spectrum','Modal periods','Location','NorthEast');
 grid on;
 xlim([0 3.0]);
 
 % Figure 2: ESA Response Profiles
-figure('Name','HW6 Part 2 — ESA Profiles');
+figure('Name','HW6 Part 2: ESA Profiles');
 
 % Lateral forces
 subplot(1,4,1);
@@ -164,7 +164,7 @@ ylabel('Story');
 title('Interstory Drift Ratios');
 grid on; ylim([0 N+1]);
 
-sgtitle(sprintf('ESA Results — Mode 1 Only, R=1  (V = %.1f kips = %.2f%% W)', ...
+sgtitle(sprintf('ESA Results: Mode 1 Only, R=1  (V = %.1f kips = %.2f%% W)', ...
     V_ESA, VW_ESA*100));
 
 %% Save outputs for Parts 3 and 4
