@@ -43,7 +43,7 @@ for n = 1:Nmodes
 end
 
 %% Step 2 — SRSS combination (always the last step)
-F_RSA   = sqrt(sum(F_modal.^2,   2));   % (Nx1)
+F_RSA   = sqrt(sum(F_modal.^2,   2));   % (Nx1), sums across columns to get result at each story
 Vs_RSA  = sqrt(sum(Vs_modal.^2,  2));   % (Nx1)
 u_RSA   = sqrt(sum(u_modal.^2,   2));   % (Nx1)
 IDR_RSA = sqrt(sum(IDR_modal.^2, 2));   % (Nx1)

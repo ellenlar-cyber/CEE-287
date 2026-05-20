@@ -1,0 +1,50 @@
+%% HW 6 part 5
+clc; clear; close all;
+
+%% Load results from Parts 1 and 2
+load('HW6_Part1_results.mat');
+load('HW6_Part2_results.mat');
+
+floors   = (1:N)';
+stories  = (1:N)';
+H_total  = 118 * 12;
+h_story  = H_total / N;     % 157.3 in
+Nmodes   = 5;               % number of modes to include
+
+% pull max sd for 1st mode from earlier parts (part 2)
+Sd1     = Sd_modes_in(1);
+
+gamma = zeros(Nmodes, 1); % Preallocate gamma for each mode
+phi = zeros(N, Nmodes);
+u_story = zeros(N, Nmodes);
+
+for n = 1:Nmodes
+        % calculation of gamma for each mode
+        gamma(n) = 4 * (-1) ^ (n-1) / (2*n*pi - pi);
+         % Define the height vector for mode shape calculation
+        x = linspace(h_story, H_total, N); 
+        % calculate phi for each story
+        phi(:, n) = (-1)^(n-1) * sin( ((2*n -1) * pi * x) / (2*H_total));
+   
+        % calculate disp for each story for each mode
+        % Calculate displacement for each story for each mode
+        u_story(:,n) = Sd1 * (gamma(n) * PHI(:,n));
+end
+
+% u roof is sum of displacements
+u_roof_approx = sum(u_story(9,:));
+% beta 2 from lecture slides
+beta2 = 1.82; % from lecture slides
+% calculate interstory drift ratio
+isdr_approx = beta2*u_roof_approx/(H_total);
+
+% for non approximate calculation, use beta 1 from gamma and phi
+% calcualtions
+% beta 1 will be effective mode shape 1
+Beta1 = Beta1_1;
+%uroof
+u_roof = Beta1* Sd1;
+% pull Beta 2 from part 2
+Beta2 = Beta2_1;
+% interstory disp
+isdr = Beta1*Beta2_1*Sd1/(H_total);

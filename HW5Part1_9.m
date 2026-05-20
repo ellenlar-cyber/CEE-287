@@ -171,3 +171,23 @@ Gamma = modalParticipationFactors;
 W1 = sum(Gamma(1)*PHI(:,1));
 buildingweight = sum(diag(M));
 W1frac = W1/buildingweight;
+
+fprintf('  beta_1=%.4f  beta_2=%.4f  W1/Wtotal=%.4f\n', Beta1, Beta2, W1frac);
+
+    % Plot effective mode shapes (separate subplot per mode)
+    floors = (1:N)';
+    figure(10);
+    titles = {'Mode 1','Mode 2','Mode 3'};
+    for n = 1:3
+        subplot(1,3,n);
+        plot(EMS(:,n), floors, 'b-o', 'LineWidth', 1.5, 'MarkerSize', 6);
+        hold on;
+        xline(0, 'k--');
+        xlabel('\Gamma_n \phi_{jn}  (Effective Mode Shape)');
+        ylabel('Floor Number');
+        title(titles{n});
+        grid on;
+        ylim([0 N+0.5]);
+    end
+    sgtitle(10);
+ 

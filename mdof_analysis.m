@@ -90,6 +90,7 @@ function R = mdof_analysis(N, m_vec, k_vec, label)
     M1     = PHI(:,1)' * M * PHI(:,1);
     m_tot  = sum(m_vec);
     W1frac = (L1^2 / M1) / m_tot;
+    
  
     % Print results
     fprintf('  T1=%.4f  T2/T1=%.4f  T3/T1=%.4f\n', T_n(1), T2T1, T3T1);

@@ -65,10 +65,6 @@ Gamma1  = Gamma_all(1);         % modal participation factor, mode 1
 Spa1    = Spa_modes_in(1);      % Spa at T1 (in/s^2)
 Sd1     = Sd_modes_in(1);       % Sd  at T1 (inches)
 
-% store beta 2 for mode 1
-Beta2_1 = R.beta2;
-Beta1_1 = R.beta1;
-
 % Effective modal mass M1* = L1^2 / Mmodal1  (kip*s^2/in)
 L1      = phi1' * M * ones(N,1);
 Mmodal1 = phi1' * M * phi1;
@@ -172,4 +168,4 @@ save('HW6_Part2_results.mat', ...
      'T_spec','Spa_spec','Sd_spec', ...
      'Spa_modes','Sd_modes','Spa_modes_in','Sd_modes_in', ...
      'V_ESA','VW_ESA','F_ESA','Vs_ESA','u_ESA','IDR_ESA', ...
-     'ag','dt','Beta1_1','Beta2_1');
+     'ag','dt');

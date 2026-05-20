@@ -18,7 +18,7 @@ k_vec = stiffness_vector(N, 1, 1) * k_story; % (9x1) uniform stiffness
 
 %% Step 2 Run eigenvalue analysis via mdof_analysis
 % Returns R.T (all 9 periods), R.PHI (normalized modes 1-3 only), R.M, R.K
-R = mdof_analysis(N, m_vec, k_vec, 'HW6 Part 1 — 9-Story Shear Building');
+R = mdof_analysis(N, m_vec, k_vec, 'HW6 Part 1: 9-Story Shear Building');
 
 %% Step 3 Extend to all 9 modes: normalize PHI and compute Gamma, EMS
 % mdof_analysis only normalizes modes 1-3 to unity at roof; do all 9 here
