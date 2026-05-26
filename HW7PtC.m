@@ -96,8 +96,36 @@ norm_flr_spectra_7 = flr_spectra_7 ./ PFA_7;
 % Normalize spectra for floor 9
 norm_flr_spectra_9 = flr_spectra_9 ./ PFA_9;
 
-%% Plot Original Spectra
-% floor 3
 
-%% Plot normalized spectra
+%% Plot original floor spectra
+floor_labels = {'3rd Floor', '7th Floor', 'Roof'};
+spectra_all  = {flr_spectra_3, flr_spectra_7, flr_spectra_9};
 
+for k = 1:3
+    figure;
+    plot(T_spec, spectra_all{k}(:,1), 'b-'); hold on;
+    plot(T_spec, spectra_all{k}(:,2), 'r-');
+    plot(T_spec, spectra_all{k}(:,3), 'k-');
+    xlabel('Period (s)');
+    ylabel('Sa (cm/s^2)');
+    title(['5% Floor Response Spectrum ' floor_labels{k}]);
+    legend('Relative SDOF', 'Absolute SDOF', 'Recorded');
+    grid on;
+    xlim([0 3]);
+end
+
+%% Plot normalized floor spectra
+norm_all = {norm_flr_spectra_3, norm_flr_spectra_7, norm_flr_spectra_9};
+
+for k = 1:3
+    figure;
+    plot(T_spec, norm_all{k}(:,1), 'b-'); hold on;
+    plot(T_spec, norm_all{k}(:,2), 'r-');
+    plot(T_spec, norm_all{k}(:,3), 'k-');
+    xlabel('Period (s)');
+    ylabel('Sa/PFA');
+    title(['Normalized 5% Floor Spectrum ' floor_labels{k}]);
+    legend('Relative SDOF', 'Absolute SDOF', 'Recorded');
+    grid on;
+    xlim([0 3]);
+end
