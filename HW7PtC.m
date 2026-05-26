@@ -136,4 +136,35 @@ for k = 1:3
     xlim([0 3]);
 end
 
+%% gradescope answers
+% 7th floor ordinates at T1
+T1 = T_approx(1);
+% for each type, find flr spectra at T1 for flr 7
+% 3 iterations (rel, abs, ground)
+flr_spectra_7_gradescope = zeros(3,1);
+for i = 1:3
+        [~,~, udd_abs_i,~,~,~,~,~] = SDOF_Response(T1, zeta, ag_vec_flr7(:,i), dt, 0, 0);
+        flr_spectra_7_gradescope(i) = max(abs(udd_abs_i));
+end
 
+% roof normalized ordinates at T3
+T3 = T_approx(3);
+% for each type, find normalzied flr spectra at T3 for flr 9
+% 3 iterations (rel, abs, ground)
+flr_spectra_9_gradescope = zeros(3,1);
+for i = 1:3
+        [~,~, udd_abs_i,~,~,~,~,~] = SDOF_Response(T3, zeta, ag_vec_flr9(:,i), dt, 0, 0);
+        % find spectra at period and normalize
+        flr_spectra_9_gradescope(i) = max(abs(udd_abs_i))/PFA_9(i);
+end
+
+%% Print gradescope answers
+fprintf('\nQ3.1: 7th Floor Spectrum Ordinate at T1 = %.3f s\n', T1);
+fprintf('Relative: %.4f cm/s^2\n', flr_spectra_7_gradescope(1));
+fprintf('Absolute: %.4f cm/s^2\n', flr_spectra_7_gradescope(2));
+fprintf('Recorded: %.4f cm/s^2\n', flr_spectra_7_gradescope(3));
+
+fprintf('\nQ3.2: Roof Normalized Spectrum Ordinate at T3 = %.3f s\n', T3);
+fprintf('Relative: %.4f\n', flr_spectra_9_gradescope(1));
+fprintf('Absolute: %.4f\n', flr_spectra_9_gradescope(2));
+fprintf('Recorded: %.4f\n', flr_spectra_9_gradescope(3));
