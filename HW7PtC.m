@@ -96,6 +96,11 @@ norm_flr_spectra_7 = flr_spectra_7 ./ PFA_7;
 % Normalize spectra for floor 9
 norm_flr_spectra_9 = flr_spectra_9 ./ PFA_9;
 
+%% comparison to amplification factor ap from ASCE 7-22
+% lecture 11 slide 49/50, some have factor of 1.0
+ap = 2.5;
+% will plot against normalized spectra in following section
+
 
 %% Plot original floor spectra
 floor_labels = {'3rd Floor', '7th Floor', 'Roof'};
@@ -124,8 +129,11 @@ for k = 1:3
     plot(T_spec, norm_all{k}(:,3), 'k-');
     xlabel('Period (s)');
     ylabel('Sa/PFA');
+     yline(2.5, 'm--', 'ap = 2.5 (ASCE 7-22)');
     title(['Normalized 5% Floor Spectrum ' floor_labels{k}]);
     legend('Relative SDOF', 'Absolute SDOF', 'Recorded');
     grid on;
     xlim([0 3]);
 end
+
+
