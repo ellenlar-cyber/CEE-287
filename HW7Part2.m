@@ -1,4 +1,4 @@
-%% HW7 Part 2 — Peak Floor Accelerations at All Levels (4 Methods)
+%% HW7 Part B: Peak Floor Accelerations at All Levels (4 Methods)
 clc; clear; close all;
 
 %% Load Part 1 results

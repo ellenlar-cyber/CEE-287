@@ -1,0 +1,103 @@
+%% HW7 Part C: Peak Floor Accelerations at All Levels (4 Methods)
+clc; clear; close all;
+
+%% Load Part A results
+load('HW7_Part1_results.mat');
+% Loaded: T_approx, PHI_approx, Gamma_approx,
+%         a_floor_abs, a_floor_rel, a_recorded,
+%         ag, dt, t, N, H_total, h_story, x_floors, zeta, T1, Nmodes
+
+floors = (1:N)';
+zeta = 0.05;
+Nmodes = 3;
+dt = 0.02;
+
+%% Compute response spectrum (Lecture 1 Iwan's method in SDOF_Response)
+% Periods: 0.02 to 3.0s in steps of 0.02s = 150 periods
+T_spec  = (0.02:0.02:3.0)';
+nT      = length(T_spec);
+
+
+%% For floor 3
+% set floor index
+fi = 3;
+% create 3 test cases (rel, abs, ground)
+ag_vec_flr3 = [a_floor_rel(:,fi), a_floor_abs(:,fi), a_recorded(:,1)];
+
+%create vector to store flr 3 results for all 3 result types for all
+%periods
+flr_spectra_3 = zeros(nT, 3);  
+
+for j = 1:3
+    for i = 1:nT
+        [~,~, udd_abs_i,~,~,~,~,~] = SDOF_Response(T_spec(i), zeta, ag_vec_flr3(:,j), dt, 0, 0);
+        flr_spectra_3(i, j) = max(abs(udd_abs_i));
+    end
+end
+
+%% Compute for floors 7
+% set floor index
+fi = 7;
+% create 3 test cases (rel, abs, ground)
+ag_vec_flr7 = [a_floor_rel(:,fi), a_floor_abs(:,fi), a_recorded(:,2)];
+
+%create vector to store flr 7 results for all 3 result types for all
+%periods
+flr_spectra_7 = zeros(nT, 3);  
+
+for j = 1:3
+    for i = 1:nT
+        [~,~, udd_abs_i,~,~,~,~,~] = SDOF_Response(T_spec(i), zeta, ag_vec_flr7(:,j), dt, 0, 0);
+        flr_spectra_7(i, j) = max(abs(udd_abs_i));
+    end
+end
+
+%% Compute for floor 9
+% set floor index
+fi = 9;
+% create 3 test cases (rel, abs, ground)
+ag_vec_flr9 = [a_floor_rel(:,fi), a_floor_abs(:,fi), a_recorded(:,3)];
+
+%create vector to store flr 3 results for all 3 result types for all
+%periods
+flr_spectra_9 = zeros(nT, 3);  
+
+for j = 1:3
+    for i = 1:nT
+        [~,~, udd_abs_i,~,~,~,~,~] = SDOF_Response(T_spec(i), zeta, ag_vec_flr9(:,j), dt, 0, 0);
+        flr_spectra_9(i, j) = max(abs(udd_abs_i));
+    end
+end
+
+%% find peak floor accerlerations (PFA) for each floor 3, 7,9 
+PFA_3_rel = max(abs(a_floor_rel(:,3)));
+PFA_3_abs = max(abs(a_floor_abs(:,3)));
+PFA_3_ground = max(abs(a_recorded(:,1)));
+PFA_3 = [PFA_3_rel, PFA_3_abs, PFA_3_ground];
+
+PFA_7_rel = max(abs(a_floor_rel(:,7)));
+PFA_7_abs = max(abs(a_floor_abs(:,7)));
+PFA_7_ground = max(abs(a_recorded(:,2)));
+PFA_7 = [PFA_7_rel, PFA_7_abs, PFA_7_ground];
+
+PFA_9_rel = max(abs(a_floor_rel(:,9)));
+PFA_9_abs = max(abs(a_floor_abs(:,9)));
+PFA_9_ground = max(abs(a_recorded(:,3)));
+PFA_9 = [PFA_9_rel, PFA_9_abs, PFA_9_ground];
+
+%% Create normalized spectra based on PFAs for each type for each floor
+%Floor 3
+% Normalize spectra for floor 3 
+norm_flr_spectra_3 = flr_spectra_3 ./ PFA_3;
+
+% Normalize spectra for floor 7
+norm_flr_spectra_7 = flr_spectra_7 ./ PFA_7;
+
+% Normalize spectra for floor 9
+norm_flr_spectra_9 = flr_spectra_9 ./ PFA_9;
+
+%% Plot Original Spectra
+% floor 3
+
+%% Plot normalized spectra
+

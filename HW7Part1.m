@@ -1,4 +1,4 @@
-%% HW7 Part A — Approximate Floor Acceleration Time Histories
+%% HW7 Part A: Approximate Floor Acceleration Time Histories
 clc; clear; close all;
 
 %% Building parameters (same as HW6)
