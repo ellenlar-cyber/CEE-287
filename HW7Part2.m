@@ -91,3 +91,11 @@ yticks(1:N);
 save('HW7_Part2_results.mat', ...
     'PFA_rel', 'PFA_abs', 'PFA_RSA', 'PFA_code', ...
     'PGA', 'Sa_abs_spec', 'Sa_abs_modes', 'T_spec');
+
+%% Gradescope Q2 — PFA at floors 4, 6, 9 in g
+g = 981;
+fprintf('\n--- Gradescope Q2 ---\n');
+for jj = [4, 6, 9]
+    fprintf('Floor %d:  RHA-Rel = %.4f g | RHA-Abs = %.4f g | RSA = %.4f g\n', ...
+        jj, PFA_rel(jj)/g, PFA_abs(jj)/g, PFA_RSA(jj)/g);
+end

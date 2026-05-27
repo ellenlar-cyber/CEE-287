@@ -57,6 +57,9 @@ for n = 1:Nmodes
     % relative SDOF acceleration = absolute minus ground acceleration
     udd_rel_n = udd_abs_n - ag;
 
+    % peak relative SDOF acc (cm/s^2)
+    D_rel_max(n) = max(abs(udd_rel_n));
+
     % compute modal response given sdof response (history * gamma * phi)
     % gives response for mode n at all floors (y) at all times (x)
     a_modal_abs(:,:,n) = udd_abs_n * (Gamma_n * phi_n)';
@@ -72,6 +75,13 @@ a_floor_rel = sum(a_modal_rel, 3);   % (Nt x N) method 1 — relative SDOF acc
 %% Recorded accelerations matrix for easy indexing
 % Columns: [3rd floor, 7th floor, roof] — matches CSV columns 3-5
 a_recorded = [a_3rd_rec, a_7th_rec, a_roof_rec];
+
+%% Gradescope Q1 — peak relative SDOF accelerations in g
+g = 981;   % cm/s^2
+fprintf('\n--- Gradescope Q1 ---\n');
+fprintf('D_rel_max Mode 1: %.4f g\n', D_rel_max(1)/g);
+fprintf('D_rel_max Mode 2: %.4f g\n', D_rel_max(2)/g);
+fprintf('D_rel_max Mode 3: %.4f g\n', D_rel_max(3)/g);
 
 %% Plots — one figure per floor level
 floor_idx    = [3, 7, 9];
